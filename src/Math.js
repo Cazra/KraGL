@@ -68,6 +68,18 @@ define('KraGL.Math', ['KraGL'], function() {
     },
 
     /**
+     * Tests if some value equals another value within some tolerance.
+     * @param  {number} x
+     * @param  {number} y
+     * @param  {number} [tolerance=0]
+     * @return {boolean}
+     */
+    fuzzyEqual: function(x, y, tolerance) {
+      tolerance = tolerance || 0;
+      return Math.abs(x - y) <= tolerance;
+    },
+
+    /**
      * Linearly maps a value from some domain to some range.
      * @param  {number} x
      * @param  {number[]} domain
@@ -212,6 +224,26 @@ define('KraGL.Math', ['KraGL'], function() {
     },
 
     /**
+     * Computes the scalar projection of v onto u. This is also the length
+     * of the projection of v onto u.
+     * You can get the projection of v onto u by scaling uHat by this value.
+     * @param  {(vec2|vec3|vec4)} u
+     * @param  {[type]} v [description]
+     * @return {number}
+     */
+    scalarProjection: function(u, v) {
+      var vec = vec2;
+      if(u.length === 3)
+        vec = vec3;
+      if(u.length === 4)
+        vec = vec4;
+
+      var uHat = vec.normalize([], u);
+      return vec.dot(uHat, v);
+    },
+
+
+    /**
      * Returns the result of some point scaled either uniformly by some
      * constant or component-wise by some vector.
      * @param  {vec4} p
@@ -294,6 +326,8 @@ define('KraGL.Math', ['KraGL'], function() {
         1
       ];
     },
+
+
 
     /**
      * Converts a point in Cartesian coordinates to polar

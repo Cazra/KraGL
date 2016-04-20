@@ -9,9 +9,21 @@ KraGL.define('KraGL.math.Quaternion', ['KraGL.math'], function() {
    */
   KraGL.math.Quaternion = {
 
-
+    /**
+     * Returns the quaternion for orienting startBasis to endBasis.
+     * @param  {basis} startBasis
+     * @param  {basis} endBasis
+     * @return {quat}
+     */
     orient: function(startBasis, endBasis) {
+      var xAxis1 = startBasis[0];
+      var xAxis2 = endBasis[0];
+      var q1 = this.rotate(xAxis1, xAxis2);
 
+      var yAxis1 = startBasis[1];
+      var yAxis2 = vec3.transformFromQuat([], yAxis1, q1);
+      var yAxis3 = endBasis[1];
+      return this.rotate(yAxis2, yAxis3);
     },
 
     /**

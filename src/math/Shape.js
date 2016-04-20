@@ -19,9 +19,8 @@ define('KraGL.math.Shape', ['KraGL.math'], function() {
      * @param  {number} [tolerance=0]
      * @return {boolean}
      */
-    containsPoint(p, tolerance) {
-      tolerance = tolerance || 0;
-      return this.distTo(p) <= tolerance;
+    contains(p, tolerance) {
+      return KraGL.Math.fuzzyEqual(this.dist(p), 0, tolerance);
     }
 
     /**
@@ -36,14 +35,8 @@ define('KraGL.math.Shape', ['KraGL.math'], function() {
     }
 
     /**
-     * Alias of distanceTo().
-     */
-    distTo(shape) {
-      return this.distanceTo(shape);
-    }
-
-    /**
-     * Gets the intersection of this shape with some other shape.
+     * Gets the intersection of this shape with some other shape,
+     * or undefined if there is no intersection.
      * @param  {KraGL.math.Shape} shape
      * @param {number} [tolerance=0]
      *   The tolerance for how close they can be to be considered
@@ -75,4 +68,10 @@ define('KraGL.math.Shape', ['KraGL.math'], function() {
       throw new Error('Must be implemented by subclass.');
     }
   };
+
+  // Define some method aliases.
+  var proto = KraGL.math.Shape.prototype;
+  _.extend(proto, {
+    dist: proto.distanceTo
+  });
 });

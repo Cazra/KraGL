@@ -26,18 +26,15 @@ define('KraGL.math.Triangle', ['KraGL.math.Shape'], function() {
    */
   KraGL.math.Triangle = class extends KraGL.math.Shape {
     constructor(options) {
-      this._p1 = _.clone(options.p1) || _.clone(options.p);
-      this._p2 = _.clone(options.p2) ||
-        KraGL.Math.translate(options.p, options.u);
-      this._p3 = _.clone(options.p3) ||
-        KraGL.Math.translate(options.p, options.v);
-    }
+      var p1 = options.p1 || options.p;
+      var p2 = options.p2;
+      var p3 = options.p3;
+      var u = options.u;
+      var v = options.v;
 
-    /**
-     * @inheritdoc
-     */
-    distanceTo(shape) {
-
+      this._p1 = _.clone(p1);
+      this._p2 = _.clone(p2) || KraGL.Math.translate(p1, u);
+      this._p3 = _.clone(p3) || KraGL.Math.translate(p1, v);
     }
 
     /**
@@ -46,28 +43,7 @@ define('KraGL.math.Triangle', ['KraGL.math.Shape'], function() {
      * @return {vec3}
      */
     getNormal() {
-      return vec3.cross([], this.getVectorU(), this.getVectorV());
-    }
-
-    /**
-     * Alias for point1().
-     */
-    p1(p) {
-      return this.point1(p);
-    }
-
-    /**
-     * Alias for point2().
-     */
-    p2(p) {
-      return this.point2(p);
-    }
-
-    /**
-     * Alias for point3().
-     */
-    p3(p) {
-      return this.point3(p);
+      return vec3.cross([], this.vecU(), this.vecV());
     }
 
     /**
@@ -76,9 +52,8 @@ define('KraGL.math.Triangle', ['KraGL.math.Shape'], function() {
      * @return {vec4}
      */
     point1(p) {
-      if(p) {
+      if(p)
         this._p1 = _.clone(p);
-      }
       return _.clone(this._p1);
     }
 
@@ -88,9 +63,8 @@ define('KraGL.math.Triangle', ['KraGL.math.Shape'], function() {
      * @return {vec4}
      */
     point2(p) {
-      if(p) {
+      if(p)
         this._p2 = _.clone(p);
-      }
       return _.clone(this._p2);
     }
 
@@ -100,9 +74,8 @@ define('KraGL.math.Triangle', ['KraGL.math.Shape'], function() {
      * @return {vec4}
      */
     point3(p) {
-      if(p) {
+      if(p)
         this._p3 = _.clone(p);
-      }
       return _.clone(this._p3);
     }
 
@@ -111,14 +84,13 @@ define('KraGL.math.Triangle', ['KraGL.math.Shape'], function() {
      * @param {vec3} u
      * @return {vec3}
      */
-    vectorU(u) {
+    vecU(u) {
       if(u) {
         this._p2 = KraGL.Math.translate(this._p1, u);
         return _.clone(u);
       }
-      else {
+      else
         return vec3.sub([], this._p2, this._p1);
-      }
     }
 
     /**
@@ -126,14 +98,24 @@ define('KraGL.math.Triangle', ['KraGL.math.Shape'], function() {
      * @param  {vec3} v
      * @return {vec3}
      */
-    vectorV(v) {
+    vecV(v) {
       if(v) {
         this._p3 = KraGL.Math.translate(this._p1, v);
         return _.clone(v);
       }
-      else {
+      else
         return vec3.sub([], this._p3, this._p1);
-      }
     }
-  }
+  };
+
+  // Define some method aliases.
+  var proto = KraGL.math.Triangle.prototype;
+  _.extend(proto, {
+    n: proto.getNormal,
+    p1: proto.point1,
+    p2: proto.point2,
+    p3: proto.point3,
+    u: proto.vectorU,
+    v: proto.vectorV
+  });
 });

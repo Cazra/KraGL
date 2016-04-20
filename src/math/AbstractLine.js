@@ -8,16 +8,108 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
    * @classdesc Abstract base class for line-like shapes, such as Lines,
    * Rays, and Segments.
    * @param  {object} options
-   * @param {vec4} p1
+   * @param {vec4} options.p1
    *        A point that the line passes through.
-   * @param {vec4} p2
+   * @param {vec4} options.p2
    *        Another point that the line passes through.
    */
   KraGL.math.AbstractLine = class extends KraGL.math.Shape {
-    constructor(p1, p2) {
+    constructor(options) {
       super();
-      this._p1 = KraGL.Math.toVec4(p1);
-      this._p2 = KraGL.Math.toVec4(p2);
+      this._p1 = KraGL.Math.toVec4(options.p1);
+      this._p2 = KraGL.Math.toVec4(options.p2);
+    }
+
+    /**
+     * Checks if a projected point p = p1 + alpha*u is within the bounds of
+     * this type of line.
+     * @param  {number} alpha
+     * @return {[type]}       [description]
+     */
+    containsProjection(alpha) {
+      _.noop(alpha);
+      throw new Error('Must be implemented by subclass.');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    distanceTo(shape) {
+      if(shape instanceof KraGL.math.Shape) {
+        if(shape instanceof KraGL.math.AbstractLine)
+          return this._distanceToAbstractLine(shape);
+        else
+          throw new Error('Shape not supported: ' + shape);
+      }
+
+      // Assume shape is a point.
+      return this._distanceToPoint(shape);
+    }
+
+    /**
+     * Gets the distance between this and another AbstractLine.
+     * @private
+     * @param  {KraGL.math.AbstractLine} other
+     * @return {number}
+     */
+    _distanceToAbstractLine(other) {
+      var coeffs = this._getClosestLineCoeffs(other);
+      var alpha = this.projection(coeffs[0]);
+      var beta = other.projection(coeffs[1]);
+      var p = this.projection(alpha);
+      var q = this.projection(beta);
+
+      if(this.containsProjection(alpha) && other.containsProjection(beta)) {
+        return vec4.dist(p, q);
+      }
+      else if(this.containsProjection(alpha)) {
+        let dist1 = vec4.dist(p, other._p1);
+        let dist2 = vec4.dist(p, other._p2);
+
+        return Math.min(dist1, dist2);
+      }
+      else if(other.containsProject(beta)) {
+        let dist1 = vec4.dist(this._p1, q);
+        let dist2 = vec4.dist(this._p2, q);
+
+        return Math.min(dist1, dist2);
+      }
+      else {
+        let dist1 = vec4.dist(this._p1, other._p1);
+        let dist2 = vec4.dist(this._p1, other._p2);
+        let dist3 = vec4.dist(this._p2, other._p1);
+        let dist4 = vec4.dist(this._p2, other._p2);
+
+        return Math.min(dist1, dist2, dist3, dist4);
+      }
+    }
+
+    /**
+     * Gets the distance between this and some point.
+     * @param  {vec4} p
+     * @return {number}
+     */
+    _distanceToPoint(p) {
+      var u = this.vec();
+      var v = vec3.sub([], p, this._p1);
+      var uHat = vec3.normalize([], u);
+      var vHat = vec3.normalize([], v);
+
+      // The scalar projection of v onto u.
+      var scaleProjUV = vec3.dot(uHat, v);
+
+      // Is the point's projection on our line?
+      var alpha = scaleProjUV/vec3.length(u);
+      if(this.containsProjection(alpha)) {
+        var crossUV = vec3.cross([], uHat, vHat);
+        return vec3.length(v)*Math.abs(crossUV);
+      }
+      else {
+        var distP1 = vec4.dist(p, this._p1);
+        var distP2 = vec4.dist(p, this._p2);
+        return Math.min(distP1, distP2);
+      }
+
     }
 
     /**
@@ -80,13 +172,12 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
       return vec3.len(vec3.cross([], u, v)) === 0;
     }
 
-
     /**
-     * Gets a copy of the first point.
-     * @param {Vec4} xyz
+     * Gets/sets the first point.
+     * @param {vec4} [p]
      * @return {vec4}
      */
-    p1(p) {
+    point1(p) {
       if(p) {
         this._p1 = KraGL.Math.toVec4(p);
       }
@@ -94,10 +185,11 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
     }
 
     /**
-     * Gets a copy of the second point.
-     * @return {vec3}
+     * Gets/sets the second point.
+     * @param {vec4} [p]
+     * @return {vec4}
      */
-    p2(p) {
+    point2(p) {
       if(p) {
         this._p2 = KraGL.Math.toVec4(p);
       }
@@ -105,17 +197,17 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
     }
 
     /**
-     * Alias for p1().
+     * Gets a point projected from p1 along the line's vector.
+     * @param  {number} alpha
+     *         The vector scalar for the projected point.
+     * @return {vec4}
+     *         The projected point.
      */
-    point1(p) {
-      return this.p1(p);
-    }
-
-    /**
-     * Alias for p2().
-     */
-    point2(p) {
-      return this.p2(p);
+    projection(alpha) {
+      var u = this.getVector();
+      var scaledU = vec3.scale([], u, alpha);
+      scaledU[3] = 0;
+      return vec4.add([], this._p1, scaledU);
     }
 
     /**
@@ -123,7 +215,10 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
      * @return {KraGL.math.Line}
      */
     toLine() {
-      return new KraGL.math.Line(this._p1, this._p2);
+      return new KraGL.math.Line({
+        p1: this._p1,
+        p2: this._p2
+      });
     }
 
     /**
@@ -131,7 +226,10 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
      * @return {KraGL.math.Ray}
      */
     toRay() {
-      return new KraGL.math.Ray(this._p1, this._p2);
+      return new KraGL.math.Ray({
+        p1: this._p1,
+        p2: this._p2
+      });
     }
 
     /**
@@ -139,7 +237,20 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
      * @return {KraGL.math.Segment}
      */
     toSegment() {
-      return new KraGL.math.Segment(this._p1, this._p2);
+      return new KraGL.math.Segment({
+        p1: this._p1,
+        p2: this._p2
+      });
     }
   };
+
+  // Define method aliases.
+  var proto = KraGL.math.AbstractLine.prototype;
+  _.extend(proto, {
+    p1: proto.point1,
+    p2: proto.point2,
+    quat: proto.getQuaternion,
+    u: proto.getVector,
+    vec: proto.getVector
+  });
 });

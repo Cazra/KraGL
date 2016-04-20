@@ -35,7 +35,7 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
       tolerance = tolerance || 0;
 
       var dot = vec3.dot(this._n, p);
-      return Math.abs(dot - this._d) <= tolerance;
+      return KraGL.Math.fuzzyEqual(dot, this._d, tolerance);
     }
 
     /**
@@ -56,33 +56,8 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
     }
 
     /**
-     * Gets the distance from this plane to an abstract line.
-     * @param  {KraGL.math.AbstractLine} line
-     * @return {number}
-     */
-    _distanceToAbstractLine(line) {
-      var intersection = this._intersectionAbstractLine(line);
-
-      // If we're intersecting, then the distance is 0.
-      if(!!intersection) {
-        return 0;
-      }
-
-      // Otherwise, get the distance to the closest endpoint.
-      else if(line instanceof KraGL.math.Segment) {
-        let p = line.p1();
-        let q = line.p2();
-
-        return Math.min( this._distanceToPoint(p), this._distanceToPoint(q));
-      }
-      else {
-        let p = line.p1();
-        return this._distanceToPoint(p);
-      }
-    }
-
-    /**
      * Gets the distance of a point to this plane.
+     * This is the length of the projection of the point onto the normal.
      * @private
      * @param  {vec4} q
      * @return {number}
@@ -91,15 +66,9 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
       var v = vec3.sub([], q, this._p);
       var vHat = vec3.normalize([], v);
       var nHat = vec3.normalize([], this._n);
+      var dotNV = vec3.dot(vHat, nHat);
 
-      return vec3.len(v)*Math.abs(vec3.dot(vHat, nHat));
-    }
-
-    /**
-     * Alias for distanceTo().
-     */
-    distTo(shape) {
-      return this.distanceTo(shape);
+      return vec3.len(v)*Math.abs(dotNV);
     }
 
     /**
@@ -108,12 +77,10 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
      * @return {(vec4|KraGL.math.Shape)}
      */
     intersection(shape) {
-      if(shape instanceof KraGL.math.AbstractLine) {
+      if(shape instanceof KraGL.math.AbstractLine)
         return this._intersectionAbstractLine(shape);
-      }
-      else {
+      else
         throw new Error('Not implemented yet.');
-      }
     }
 
     /**
@@ -137,23 +104,16 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
       var dotNV = vec3.dot(n, v);
       var dotNU = vec3.dot(n, u);
 
-      // If u is orthogonal to the plane's normal, then it is parallel to the
-      // plane. This could mean that the intersection IS the segment or
-      // the segment doesn't intersect the plane at all.
+      // Is the line parallel to the plane?
       if(dotNU === 0) {
 
-        // Segment is on the plane.
-        if(dotNV === 0) {
+        // If the line is on the plane, then the intersection is the line
+        // itself. Otherwise, the line is parallel, but never intersecting.
+        if(dotNV === 0)
           return line.clone();
-        }
-
-        // nope.
-        else {
+        else
           return undefined;
-        }
       }
-
-      // Compute the intersection parametrically.
       else {
         var alpha = dotNV/dotNU;
 
@@ -167,11 +127,8 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
           result[3] = 1;
           return result;
         }
-
-        // Nope.
-        else {
+        else
           return undefined;
-        }
       }
     }
 
@@ -228,12 +185,13 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
 
     /**
      * Recalculates the internal vector equation for this plane.
+     * nx*x + ny*y + nz*z + d = 0
+     * or
+     * dot(n, p) + d = 0
      * @private
      */
     _recalcPlaneEquation() {
-      this._d = -this._n[0]*this._p[0] -
-        this._n[1]*this._p[1] -
-        this._n[2]*this._p[2];
+      this._d = -vec3.dot(this._n, this._p);
     }
   };
 });
