@@ -16,15 +16,18 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
   KraGL.math.AbstractLine = class extends KraGL.math.Shape {
     constructor(options) {
       super();
-      this._p1 = KraGL.Math.toVec4(options.p1);
-      this._p2 = KraGL.Math.toVec4(options.p2);
+      this._p1 = KraGL.Math.point(options.p1);
+      this._p2 = KraGL.Math.point(options.p2);
+
+      if(_.isEqual(this._p1, this._p2))
+        throw new Error('Line endpoints cannot be the same.');
     }
 
     /**
      * Checks if a projected point p = p1 + alpha*u is within the bounds of
      * this type of line.
      * @param  {number} alpha
-     * @return {[type]}       [description]
+     * @return {boolean}
      */
     containsProjection(alpha) {
       _.noop(alpha);
@@ -68,17 +71,17 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
 
         return Math.min(dist1, dist2);
       }
-      else if(other.containsProject(beta)) {
+      else if(other.containsProjection(beta)) {
         let dist1 = vec4.dist(this._p1, q);
         let dist2 = vec4.dist(this._p2, q);
 
         return Math.min(dist1, dist2);
       }
       else {
-        let dist1 = vec4.dist(this._p1, other._p1);
-        let dist2 = vec4.dist(this._p1, other._p2);
-        let dist3 = vec4.dist(this._p2, other._p1);
-        let dist4 = vec4.dist(this._p2, other._p2);
+        let dist1 = this._distanceToPoint(other._p1);
+        let dist2 = this._distanceToPoint(other._p2);
+        let dist3 = other._distanceToPoint(this._p1);
+        let dist4 = other._distanceToPoint(this._p2);
 
         return Math.min(dist1, dist2, dist3, dist4);
       }
@@ -86,6 +89,7 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
 
     /**
      * Gets the distance between this and some point.
+     * @private
      * @param  {vec4} p
      * @return {number}
      */
@@ -101,8 +105,8 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
       // Is the point's projection on our line?
       var alpha = scaleProjUV/vec3.length(u);
       if(this.containsProjection(alpha)) {
-        var crossUV = vec3.cross([], uHat, vHat);
-        return vec3.length(v)*Math.abs(crossUV);
+        var sinUV = vec3.len(vec3.cross([], uHat, vHat));
+        return vec3.length(v)*Math.abs(sinUV);
       }
       else {
         var distP1 = vec4.dist(p, this._p1);
@@ -120,7 +124,9 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
      * See
      * http://homepage.univie.ac.at/franz.vesely/notes/hard_sticks/hst/hst.html
      *
-     * @protected
+     * If the lines are parallel, then the coefficients are undefined.
+     *
+     * @private
      * @param {KraGL.math.AbstractLine} line
      * @return {vec2}
      *         The first value is this line's coefficient.
@@ -162,14 +168,208 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
     }
 
     /**
-     * Checks whether this AbstractLine is paralell to another AbstractLine.
-     * @param  {KraGL.math.AbstractLine}  other
-     * @return {boolean}
+     * @inheritdoc
      */
-    isParallel(other) {
+    intersection(other, tolerance) {
+      if(other instanceof KraGL.math.AbstractLine) {
+        return this._intersectionAbstractLine(other, tolerance);
+      }
+
+      throw new Error('Shape not supported: ' + other);
+    }
+
+    /**
+     * Gets the intersection between this and another AbstractLine. This could
+     * produce one of 3 results:
+     * If the lines never intersect, the result is undefined.
+     * If the lines intersect at a single point, that point is returned.
+     * If the lines overlap, then a new AbstractLine defining where they
+     * overlap is returned.
+     * @private
+     * @param  {KraGL.math.AbstractLine} other
+     * @param {number} [tolerance]
+     * @return {(vec4|KraGL.math.AbstractLine)}
+     */
+    _intersectionAbstractLine(other, tolerance) {
+      if(this.isCollinear(other)) {
+
+        // Is either line a Line?
+        if(this instanceof KraGL.math.Line)
+          return other.clone();
+        else if(other instanceof KraGL.math.Line)
+          return this.clone();
+
+        // Is either line a Ray?
+        else if(this instanceof KraGL.math.Ray)
+          return other._intersectionCollinearRay(this);
+        else if(other instanceof KraGL.math.Ray)
+          return this._intersectionCollinearRay(other);
+
+        // Both lines are Segments.
+        else
+          return this._intersectionCollinearSegment(other);
+      }
+      else {
+        return this._intersectionSkew(other, tolerance);
+      }
+    }
+
+    /**
+     * Gets the intersection of this with a collinear Ray.
+     * @private
+     * @param  {KraGL.math.Ray} other
+     * @param  {number} [tolerance]
+     * @return {(KraGL.math.Ray|KraGL.math.Segment)}
+     */
+    _intersectionCollinearRay(other, tolerance) {
+      var u = this.vec();
+      var v = other.vec();
+      var sameDir = (vec3.dot(u,v) > 0);
+
+      var containsP1 = other.contains(this._p1, tolerance);
+      var containsP3 = this.contains(other._p1, tolerance);
+      var containsP4 = this.contains(other._p2, tolerance);
+
+      // Overlap of two Rays?
+      if(this instanceof KraGL.math.Ray) {
+        if(sameDir) {
+          if(containsP1)
+            return other.clone();
+          else if(containsP3)
+            return this.clone();
+        }
+        else if(containsP1)
+          return new KraGL.math.Segment({
+            p1: this._p1,
+            p2: other._p1
+          });
+      }
+
+      // Overlap with ta Segment?
+      else if(containsP3 && containsP4)
+        return new KraGL.math.Segment({
+          p1: other._p1,
+          p2: other._p2
+        });
+      else if(containsP3)
+        return new KraGL.math.Segment({
+          p1: this._p1,
+          p2: other._p1
+        });
+      else if(containsP4)
+        return new KraGL.math.Segment({
+          p1: this._p1,
+          p2: other._p2
+        });
+
+      // No overlap.
+      else
+        return undefined;
+    }
+
+    /**
+     * Gets the intersection of this with a collinear segment.
+     * @private
+     * @param  {KraGL.math.Segment} other
+     * @param {number} [tolerance]
+     * @return {KraGL.math.Segment}
+     */
+    _intersectionCollinearSegment(other, tolerance) {
+      var p1 = this._p1;
+      var p2 = this._p2;
+      var p3 = other._p1;
+      var p4 = other._p2;
+
+      var containsP1 = other.contains(p1, tolerance);
+      var containsP2 = other.contains(p2, tolerance);
+      var containsP3 = this.contains(p3, tolerance);
+      var containsP4 = this.contains(p4, tolerance);
+
+      if(containsP1 && containsP2)
+        return this.clone();
+      else if(containsP1 && containsP3)
+        return new KraGL.math.Segment({
+          p1: p1,
+          p2: p3
+        });
+      else if(containsP1 && containsP4)
+        return new KraGL.math.Segment({
+          p1: p1,
+          p2: p4
+        });
+      else if(containsP2 && containsP3)
+        return new KraGL.math.Segment({
+          p1: p2,
+          p2: p3
+        });
+      else if(containsP2 && containsP4)
+        return new KraGL.math.Segment({
+          p1: p2,
+          p2: p4
+        });
+      else if(containsP3 && containsP4)
+        return other.clone();
+      else
+        return undefined;
+    }
+
+    /**
+     * Gets the intersection of two skew lines, or undefined if they don't
+     * intersect.
+     * @param  {KraGL.math.AbstractLine} other
+     * @param  {number} [tolerance]
+     * @return {vec4}
+     */
+    _intersectionSkew(other, tolerance) {
+      var coeffs = this._getClosestLineCoeffs(other);
+      var alpha = coeffs[0];
+      var beta = coeffs[1];
+
+      if(this.containsProjection(alpha) && other.containsProjection(beta)) {
+        var p = this.projection(alpha);
+        var q = this.projection(beta);
+
+        var dist = vec4.dist(p, q);
+        if(KraGL.Math.fuzzyEqual(dist, 0, tolerance))
+          return p;
+        else
+          return undefined;
+      }
+      else
+        return undefined;
+    }
+
+    /**
+     * Checks if this AbstractLine is collinear with another AbstractLine.
+     * @param  {KraGL.math.AbstractLine}  other
+     * @param {number} tolerance
+     * @return {Boolean}
+     */
+    isCollinear(other, tolerance) {
       var u = this.getVector();
       var v = other.getVector();
-      return vec3.len(vec3.cross([], u, v)) === 0;
+      var w = vec3.sub([], this._p1, other._p1);
+
+      var sinUV = vec3.length(vec3.cross([], u, v));
+      var sinUW = vec3.length(vec3.cross([], u, w));
+
+      return KraGL.Math.fuzzyEqual(sinUV, 0, tolerance) &&
+              KraGL.Math.fuzzyEqual(sinUW, 0, tolerance);
+    }
+
+    /**
+     * Checks whether this AbstractLine is paralell to another AbstractLine.
+     * @param  {KraGL.math.AbstractLine}  other
+     * @param {number} tolerance
+     * @return {boolean}
+     */
+    isParallel(other, tolerance) {
+      var u = this.getVector();
+      var v = other.getVector();
+
+      var sinUV = vec3.length(vec3.cross([], u, v));
+
+      return KraGL.Math.fuzzyEqual(sinUV, 0, tolerance);
     }
 
     /**
@@ -247,6 +447,7 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
   // Define method aliases.
   var proto = KraGL.math.AbstractLine.prototype;
   _.extend(proto, {
+    dist: proto.distanceTo,
     p1: proto.point1,
     p2: proto.point2,
     quat: proto.getQuaternion,

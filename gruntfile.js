@@ -5,7 +5,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-jsdoc');
-  grunt.loadNpmTasks('grunt-mocha-test');
 
   // Project configuration.
   grunt.initConfig({
@@ -27,6 +26,7 @@ module.exports = function(grunt) {
       dist: {
         src: ['src/**/*.js'],
         options: {
+          access: 'public',
           destination: 'docs/html'
         }
       }
@@ -363,14 +363,6 @@ module.exports = function(grunt) {
       },
       src: ['src/**/*.js']
     },
-    mochaTest: {
-      test: {
-        options: {
-          reporter: 'nyan'
-        },
-        src: ['test/**/*.js']
-      }
-    },
     uglify: {
       build: {
         files: {
@@ -381,8 +373,5 @@ module.exports = function(grunt) {
   });
 
   // Grunt task(s).
-  grunt.registerTask('default', ['jshint', 'concat', 'mochaTest']); // Used to include uglify, but it doesn't support a lot of ES6 features yet.
-  grunt.registerTask('test', ['jshint', 'concat', 'mochaTest']);
-  grunt.registerTask('docs', ['jsdoc']);
-
+  grunt.registerTask('default', ['jshint', 'concat', 'jsdoc']);
 };

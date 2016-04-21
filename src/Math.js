@@ -121,6 +121,33 @@ define('KraGL.Math', ['KraGL'], function() {
     },
 
     /**
+     * Converts a vector into a vec4 representing a homogenous 3D point.
+     * @param  {(vec2|vec3|vec4)} v
+     * @return {vec4}
+     */
+    point: function(v) {
+      return [
+        v[0] || 0,
+        v[1] || 0,
+        v[2] || 0,
+        v[3] || 1
+      ];
+    },
+
+    /**
+     * Converts a vector into a vec3 representing a homogenous 2D point.
+     * @param  {(vec2|vec3|vec4)} v
+     * @return {vec3}
+     */
+    point2D: function(v) {
+      return [
+        v[0] || 0,
+        v[1] || 0,
+        v[2] || 1
+      ];
+    },
+
+    /**
      * Creates a quaternion that can be used to produce a rotation from
      * u to v.
      * @param  {vec3} u
@@ -228,7 +255,7 @@ define('KraGL.Math', ['KraGL'], function() {
      * of the projection of v onto u.
      * You can get the projection of v onto u by scaling uHat by this value.
      * @param  {(vec2|vec3|vec4)} u
-     * @param  {[type]} v [description]
+     * @param  {(vec2|vec3|vec4)} v
      * @return {number}
      */
     scalarProjection: function(u, v) {

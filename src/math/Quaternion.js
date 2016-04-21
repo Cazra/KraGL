@@ -1,4 +1,4 @@
-KraGL.define('KraGL.math.Quaternion', ['KraGL.math'], function() {
+define('KraGL.math.Quaternion', ['KraGL.math'], function() {
   'use strict';
 
   /**
