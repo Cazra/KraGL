@@ -4,8 +4,6 @@ var KraGL;
 define('KraGL', [], function() {
   'use strict';
 
-  console.log('defined KragL');
-
   /**
    * @class KraGL
    * @classdesc The top-level object encapsulating the KraGL library.

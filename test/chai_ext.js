@@ -1,0 +1,41 @@
+'use strict';
+
+_.extend(chai.assert, {
+  /**
+   * Checks if the corresponding components of two vectors are approximately
+   * equal to each other.
+   * @param  {(vec2|vec3|vec4)} u
+   * @param  {(vec2|vec3|vec4)} v
+   * @param  {number} delta
+   * @return {boolean}
+   */
+  vecApproximately: function(u, v, delta) {
+    if(u.length !== v.length)
+      throw new Error('Vectors not same length.');
+
+    _.each(_.range(u.length), function(i) {
+      var x = u[i];
+      var y = v[i];
+      chai.assert.approximately(x, y, delta);
+    });
+  }
+});
+
+
+// Unit test:
+describe('chai.assert.vecApproximately', function() {
+  it('pass', function() {
+    chai.assert.vecApproximately([1,1,1], [1.00001, 1.00001, 0.99999], 0.001);
+  });
+  it('fail', function() {
+    chai.assert.throw(function() {
+      chai.assert.vecApproximately([2,2,2], [1,1,1], 0.1);
+      chai.assert.vecApproximately([1.11,1,1], [1,1,1], 0.1);
+    });
+  });
+  it('bad case - unequal lengths', function() {
+    chai.assert.throw(function() {
+      chai.assert.vecApproximately([1,1,1,0], [1.00001, 1.00001, 0.99999], 0.001);
+    });
+  });
+});

@@ -72,11 +72,12 @@ define('KraGL.Math', ['KraGL'], function() {
       var dDomain = domain[1] - domain[0];
 
       var alpha = (x-domain[0])/dDomain;
-      return this.mix(range[0], range[1], alpha);
+      return this.mix(alpha, range);
     },
 
     /**
-     * Creates a change of basis matrix.
+     * Creates a change of basis matrix from 3 axis vectors. The axis vectors
+     * are assumed to be orthogonal to each other.
      * @param {vec3} a
      * @param {vec3} b
      * @param {vec3} c
@@ -110,7 +111,7 @@ define('KraGL.Math', ['KraGL'], function() {
         v[0] || 0,
         v[1] || 0,
         v[2] || 0,
-        v[3] || 1
+        1
       ];
     },
 
@@ -123,48 +124,8 @@ define('KraGL.Math', ['KraGL'], function() {
       return [
         v[0] || 0,
         v[1] || 0,
-        v[2] || 1
+        1
       ];
-    },
-
-    /**
-     * Creates a quaternion that can be used to produce a rotation from
-     * u to v.
-     * @param  {vec3} u
-     * @param  {vec3} v
-     * @return {quat}
-     */
-    quatFromTo: function(u, v) {
-      u = this.vec3(u);
-      v = this.vec3(v);
-
-      var uHat = vec3.normalize([], u);
-      var vHat = vec3.normalize([], v);
-
-      var theta = Math.acos(vec3.dot(uHat, vHat));
-      var n = vec3.cross([], u, v);
-
-      return quat.setAxisAngle([], n, theta);
-    },
-
-    /**
-     * Creates a quaternion for changing from one orientation to another.
-     * @param  {vec3} fromX
-     *         The starting X axis
-     * @param  {vec3} fromY
-     *         The starting y axis
-     * @param  {vec3} toX
-     *         The ending x axis
-     * @param  {vec3} toY
-     *         The ending y axis
-     * @return {quat}
-     */
-    quatOrient: function(fromX, fromY, toX, toY) {
-      var q1 = this.quatFromTo(fromX, toX);
-
-      var q1Y = vec3.transformFromQuat([], fromY, q1);
-      var q2 = this.quatFromTo(q1Y, toY);
-      return quat.mul([], q2, q1);
     },
 
     /**
@@ -187,7 +148,7 @@ define('KraGL.Math', ['KraGL'], function() {
      */
     reflect: function(i, n) {
       var scalar = 2*vec3.dot(n, i);
-      return vec3.sub([], vec3.scale([], n, scalar));
+      return vec3.sub([], i, vec3.scale([], n, scalar));
     },
 
     /**
@@ -283,22 +244,6 @@ define('KraGL.Math', ['KraGL'], function() {
     },
 
     /**
-     * Performs the smooth Hermite interpolation between 0 and 1
-     * when x is in some exclusive range.
-     * See: https://www.opengl.org/sdk/docs/man/html/smoothstep.xhtml
-     * @param  {number} x
-     * @param {number[]} range
-     * @return {number}
-     */
-    smoothstep: function(x, range) {
-      if(range[0] > range[1])
-        return undefined;
-
-      var t = this.clamp(this.unmix(x, range), 0, 1);
-      return t*t*(3-2*t);
-    },
-
-    /**
      * Return 0 if x < edge. Else 1.
      * @param  {number} edge
      * @param  {number} x
@@ -350,48 +295,6 @@ define('KraGL.Math', ['KraGL'], function() {
         dist,
         Math.atan2(point[1], point[0]),
         Math.acos(point[2]/dist)
-      ];
-    },
-
-    /**
-     * Creates a vec2 from some other vector.
-     * Undefined values default to 0.
-     * @param  {(vec2|vec3|vec4)} u
-     * @return {vec2}
-     */
-    toVec2: function(u) {
-      return [
-        u[0] || 0,
-        u[1] || 0
-      ];
-    },
-
-    /**
-     * Creates a vec3 from some other vector.
-     * Undefined values default to 0.
-     * @param  {(vec2|vec3|vec4)} u
-     * @return {vec3}
-     */
-    toVec3: function(u) {
-      return [
-        u[0] || 0,
-        u[1] || 0,
-        u[2] || 0
-      ];
-    },
-
-    /**
-     * Creates a vec4 from some other vector.
-     * Undefined values default to 0.
-     * @param  {(vec2|vec3|vec4)} u
-     * @return {vec4}
-     */
-    toVec4: function(u) {
-      return [
-        u[0] || 0,
-        u[1] || 0,
-        u[2] || 0,
-        u[3] || 0
       ];
     },
 
@@ -450,17 +353,15 @@ define('KraGL.Math', ['KraGL'], function() {
      * Checks if two vectors are parallel.
      * @param {vec3} u
      * @param {vec3} v
+     * @param {number} tolerance
      * @return {boolean}
      */
-    vecParallel: function(u, v) {
+    vecParallel: function(u, v, tolerance) {
       u = this.toVec3(u);
       v = this.toVec3(v);
 
-      var uHat = vec3.normalize([], u);
-      var vHat = vec3.normalize([], v);
-
-      var sin = vec3.length(vec3.cross(uHat, vHat));
-      return sin === 0;
+      var sin = vec3.length(vec3.cross([], u, v));
+      return KraGL.Math.approx(sin, 0, tolerance);
     },
 
     /**
