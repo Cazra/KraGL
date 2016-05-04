@@ -16,6 +16,21 @@ define('KraGL.Math', ['KraGL'], function() {
     TAU: Math.PI*2,
 
     /**
+     * Tests if some value approximately equals another value within some
+     * tolerance.
+     * @param  {number} x
+     * @param  {number} y
+     * @param  {number} [tolerance=0]
+     * @return {boolean}
+     */
+    approx: function(x, y, tolerance) {
+      tolerance = tolerance || 0;
+      if(tolerance < 0)
+        throw new Error('Negative tolerance value not allowed.');
+      return Math.abs(x - y) <= tolerance;
+    },
+
+    /**
      * Constraints a value to lie between two further values.
      * @param  {number} x
      * @param  {number} min
@@ -36,47 +51,12 @@ define('KraGL.Math', ['KraGL'], function() {
     },
 
     /**
-     * Orients a vector to point away from a surface as defined by its normal.
-     * Returns n if dot(nRef, i) < 0. Else -n.
-     * This is usually used to determine if a plane is front-facing or
-     * back-facing from a particular view direction.
-     * See: https://www.opengl.org/sdk/docs/man/html/faceforward.xhtml
-     * @param  {vec3} n
-     *         The first surface normal vector.
-     * @param  {vec3} i
-     *         The incident vector.
-     * @param  {vec3} nRef
-     *         The other surface normal vector. (I guess somehow our surface
-     *         has two normals???)
-     * @return {vec3}
-     */
-    faceforward: function(n, i, nRef) {
-      if(nRef.dot(i) < 0)
-        return n;
-      else {
-        return vec3.negate([], n);
-      }
-    },
-
-    /**
      * Gets the fractional part of x, computed as x - floor(x).
      * @param  {number} x
      * @return {number}
      */
     fract: function(x) {
       return x - Math.floor(x);
-    },
-
-    /**
-     * Tests if some value equals another value within some tolerance.
-     * @param  {number} x
-     * @param  {number} y
-     * @param  {number} [tolerance=0]
-     * @return {boolean}
-     */
-    fuzzyEqual: function(x, y, tolerance) {
-      tolerance = tolerance || 0;
-      return Math.abs(x - y) <= tolerance;
     },
 
     /**

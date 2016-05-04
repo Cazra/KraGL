@@ -330,7 +330,7 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
         var q = this.projection(beta);
 
         var dist = vec4.dist(p, q);
-        if(KraGL.Math.fuzzyEqual(dist, 0, tolerance))
+        if(KraGL.Math.approx(dist, 0, tolerance))
           return p;
         else
           return undefined;
@@ -353,8 +353,8 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
       var sinUV = vec3.length(vec3.cross([], u, v));
       var sinUW = vec3.length(vec3.cross([], u, w));
 
-      return KraGL.Math.fuzzyEqual(sinUV, 0, tolerance) &&
-              KraGL.Math.fuzzyEqual(sinUW, 0, tolerance);
+      return KraGL.Math.approx(sinUV, 0, tolerance) &&
+              KraGL.Math.approx(sinUW, 0, tolerance);
     }
 
     /**
@@ -369,7 +369,7 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
 
       var sinUV = vec3.length(vec3.cross([], u, v));
 
-      return KraGL.Math.fuzzyEqual(sinUV, 0, tolerance);
+      return KraGL.Math.approx(sinUV, 0, tolerance);
     }
 
     /**

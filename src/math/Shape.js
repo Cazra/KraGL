@@ -20,7 +20,7 @@ define('KraGL.math.Shape', ['KraGL.math'], function() {
      * @return {boolean}
      */
     contains(p, tolerance) {
-      return KraGL.Math.fuzzyEqual(this.dist(p), 0, tolerance);
+      return KraGL.Math.approx(this.dist(p), 0, tolerance);
     }
 
     /**
@@ -72,6 +72,8 @@ define('KraGL.math.Shape', ['KraGL.math'], function() {
   // Define some method aliases.
   var proto = KraGL.math.Shape.prototype;
   _.extend(proto, {
-    dist: proto.distanceTo
+    dist: function(shape) {
+      return this.distanceTo(shape);
+    }
   });
 });

@@ -35,7 +35,7 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
       tolerance = tolerance || 0;
 
       var dot = vec3.dot(this._n, p);
-      return KraGL.Math.fuzzyEqual(dot, this._d, tolerance);
+      return KraGL.Math.approx(dot, this._d, tolerance);
     }
 
     /**
