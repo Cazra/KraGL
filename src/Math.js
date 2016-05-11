@@ -164,13 +164,15 @@ define('KraGL.Math', ['KraGL'], function() {
      */
     refract: function(i, n, eta) {
       var dotNI = vec3.dot(n,i);
-      var k = 1 - eta*eta * (1 - dotNI*dotNI);
+      var k = 1.0 - eta*eta * (1.0 - dotNI*dotNI);
       if(k < 0)
         return [0, 0, 0];
       else {
-        var scaledI = vec3.scale([], i, eta);
-        var scaledN = vec3.scale([], n, eta*dotNI + Math.sqrt(k));
-        return vec3.sub([], scaledI, scaledN);
+        // eta * i - (eta * dot(n, i) + sqrt(k)) * n
+        return vec3.sub([],
+          vec3.scale([], i, eta),
+          vec3.scale([], n, eta*dotNI + Math.sqrt(k))
+        );
       }
     },
 

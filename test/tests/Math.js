@@ -174,9 +174,12 @@ describe('KraGL.Math', function() {
 
   describe('refract', function() {
     it('orthogonal incident angle', function() {
+      var nAir = 1.0;
+      var nWater = 1.333;
+
       var uHat = [0, -1, 0];
       var nHat = [0, 1, 0];
-      var eta = 1.333; // water
+      var eta = nAir/nWater; // air to water
       var refracted = KraGL.Math.refract(uHat, nHat, eta);
       assert.vecApproximately(refracted, uHat, 0.0001);
     });
@@ -188,14 +191,25 @@ describe('KraGL.Math', function() {
       assert.vecApproximately(refracted, uHat, 0.0001);
     });
     it('water', function() {
-      var uHat = vec3.normalize([], [-1, -1, -1]);
-      var nHat = [0,1,0];
-      var eta = 1.333;
-      var refracted = KraGL.Math.refract(uHat, nHat, eta);
-      console.log(refracted);
+      var nAir = 1.0;
+      var nWater = 1.333;
 
-      // TODO: Use Snell's law to come up with a test problem.
-      throw new Error('TODO');
+      var uHat = vec3.normalize([], [-1, -1, 0]);
+      var nHat = [0,1,0];
+      var eta = nAir/nWater;
+
+      var refracted = KraGL.Math.refract(uHat, nHat, eta);
+
+      // Using Snell's Law to find the expected angle of refraction.
+      // From that, we can find the expected vector.
+      var refractedAngle = -Math.PI/2 - Math.asin(eta*Math.sin(Math.atan2(1,1)));
+      var expected = [
+        Math.cos(refractedAngle),
+        Math.sin(refractedAngle),
+        0
+      ];
+
+      assert.vecApproximately(refracted, expected, 0.0001);
     });
   });
 });
