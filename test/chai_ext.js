@@ -16,7 +16,9 @@ _.extend(chai.assert, {
     _.each(_.range(u.length), function(i) {
       var x = u[i];
       var y = v[i];
-      chai.assert.approximately(x, y, delta);
+
+      if(!isNaN(x) || !isNaN(y))
+        chai.assert.approximately(x, y, delta);
     });
   }
 });
@@ -26,11 +28,17 @@ _.extend(chai.assert, {
 describe('chai.assert.vecApproximately', function() {
   it('pass', function() {
     chai.assert.vecApproximately([1,1,1], [1.00001, 1.00001, 0.99999], 0.001);
+    chai.assert.vecApproximately([NaN, NaN, NaN, 1], [NaN, NaN, NaN, 1], 0.001);
   });
   it('fail', function() {
     chai.assert.throw(function() {
       chai.assert.vecApproximately([2,2,2], [1,1,1], 0.1);
+    });
+    chai.assert.throw(function() {
       chai.assert.vecApproximately([1.11,1,1], [1,1,1], 0.1);
+    });
+    chai.assert.throw(function() {
+      chai.assert.vecApproximately([NaN, 1, 1], [0, 1, 1], 0.1);
     });
   });
   it('bad case - unequal lengths', function() {

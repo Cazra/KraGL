@@ -32,6 +32,28 @@ describe('KraGL.Math', function() {
     });
   });
 
+  describe('cartesian', function() {
+    it('normal case', function() {
+      var cart = KraGL.Math.cartesian([0,0,0]);
+      var expected = [0,0,0,1];
+      assert.vecApproximately(cart, expected, 0.001);
+
+      cart = KraGL.Math.cartesian([5, 0, 0]);
+      expected = [0,0,5,1];
+      assert.vecApproximately(cart, expected, 0.001);
+
+      cart = KraGL.Math.cartesian([4, Math.PI/4, Math.PI/2]);
+      expected = vec3.scale([], vec3.normalize([], [1,1,0]), 4);
+      expected[3] = 1;
+      assert.vecApproximately(cart, expected, 0.001);
+
+      cart = KraGL.Math.cartesian([4, 0, Math.PI/4]);
+      expected = vec3.scale([], vec3.normalize([], [1,0,1]), 4);
+      expected[3] = 1;
+      assert.vecApproximately(cart, expected, 0.001);
+    });
+  });
+
   describe('clamp', function() {
     it('normal case', function() {
       assert.equal(KraGL.Math.clamp(10,0,5), 5);
@@ -148,6 +170,26 @@ describe('KraGL.Math', function() {
     });
   });
 
+  describe('polar', function() {
+    it('normal case', function() {
+      var polar = KraGL.Math.polar([0,0,0,1]);
+      var expected = [0,NaN,NaN];
+      assert.vecApproximately(polar, expected, 0.0001);
+
+      polar = KraGL.Math.polar([2, 2, 0, 1]);
+      expected = [Math.sqrt(8), Math.PI/4, Math.PI/2];
+      assert.vecApproximately(polar, expected, 0.0001);
+
+      polar = KraGL.Math.polar([0,0,4,1]);
+      expected = [4, 0, 0];
+      assert.vecApproximately(polar, expected, 0.0001);
+
+      polar = KraGL.Math.polar([2,0,2,1]);
+      expected = [Math.sqrt(8), 0, Math.PI/4];
+      assert.vecApproximately(polar, expected, 0.0001);
+    });
+  });
+
   describe('radians', function() {
     it('normal case', function() {
       assert.approximately(KraGL.Math.radians(0), 0, 0.0001);
@@ -210,6 +252,180 @@ describe('KraGL.Math', function() {
       ];
 
       assert.vecApproximately(refracted, expected, 0.0001);
+    });
+  });
+
+
+  describe('rotate', function() {
+    it('normal case', function() {
+      var pt = [2, 2, 1, 1];
+      var axis = [0, 0, 1];
+      var rotated = KraGL.Math.rotate(pt, axis, 0);
+      var expected = [2, 2, 1, 1];
+      assert.vecApproximately(rotated, expected, 0.0001);
+
+      var pt = [2, 2, 1, 1];
+      var axis = [0, 0, 1];
+      var rotated = KraGL.Math.rotate(pt, axis, Math.PI/4);
+      var expected = [0, Math.sqrt(8), 1, 1];
+      assert.vecApproximately(rotated, expected, 0.0001);
+
+      pt = [0, 4, 0, 1];
+      axis = vec3.normalize([], [1,0,1]);
+      rotated = KraGL.Math.rotate(pt, axis, Math.PI/2);
+
+      expected = [-Math.sqrt(8), 0, Math.sqrt(8), 1];
+      assert.vecApproximately(rotated, expected, 0.0001);
+    });
+
+    it('default axis', function() {
+      var pt = [2, 2, 1, 1];
+      var rotated = KraGL.Math.rotate(pt, Math.PI/4);
+      var expected = [0, Math.sqrt(8), 1, 1];
+      assert.vecApproximately(rotated, expected, 0.0001);
+    });
+
+    it('bad case - 0 vector', function() {
+      var pt = [2, 2, 1, 1];
+      var axis = [0, 0, 0];
+      var rotated = KraGL.Math.rotate(pt, axis, Math.PI/4);
+      var expected = [NaN, NaN, NaN, 1];
+      assert.vecApproximately(rotated, expected, 0.0001);
+    });
+  });
+
+  describe('rotate2D', function() {
+    it('normal case', function() {
+      var pt = [2, 2, 1];
+      var rotated = KraGL.Math.rotate2D(pt, Math.PI/4);
+      var expected = [0, Math.sqrt(8), 1];
+      assert.vecApproximately(rotated, expected, 0.0001);
+    });
+  });
+
+  describe('scalarProjection', function() {
+    it('normal case', function() {
+      var u = [5, 0];
+      var v = [2, 2];
+      var sProj = KraGL.Math.scalarProjection(u, v);
+      assert.approximately(sProj, 2, 0.001);
+
+      var u = [5, 0, 0];
+      var v = [2, 2, 2];
+      var sProj = KraGL.Math.scalarProjection(u, v);
+      assert.approximately(sProj, 2, 0.001);
+
+      var u = [5, 0, 0, 0];
+      var v = [2, 2, 2, 2];
+      var sProj = KraGL.Math.scalarProjection(u, v);
+      assert.approximately(sProj, 2, 0.001);
+    });
+  });
+
+  describe('scale', function() {
+    it('normal case', function() {
+      var pt = [2,3,4,1];
+      var scaled = KraGL.Math.scale(pt, [1,2,3]);
+      assert.vecApproximately(scaled, [2,6,12,1], 0.0001);
+    });
+    it('uniform scale', function() {
+      var pt = [2,3,4,1];
+      var scaled = KraGL.Math.scale(pt, 2);
+      assert.vecApproximately(scaled, [4,6,8,1], 0.0001);
+    });
+  });
+
+  describe('scale2D', function() {
+    it('normal case', function() {
+      var pt = [2,3,1];
+      var scaled = KraGL.Math.scale2D(pt, [1,2]);
+      assert.vecApproximately(scaled, [2,6,1], 0.0001);
+    });
+    it('uniform scale', function() {
+      var pt = [2,3,1];
+      var scaled = KraGL.Math.scale2D(pt, 3);
+      assert.vecApproximately(scaled, [6,9,1], 0.0001);
+    });
+  });
+
+  describe('sign', function() {
+    it('positive', function() {
+      assert.equal(KraGL.Math.sign(4), 1);
+    });
+    it('negative', function() {
+      assert.equal(KraGL.Math.sign(-3), -1);
+    });
+    it('zero', function() {
+      assert.equal(KraGL.Math.sign(0), 0);
+    });
+    it('bad case - NaN', function() {
+      assert.isNaN(KraGL.Math.sign(NaN));
+    });
+  });
+
+  describe('slerp', function() {
+    it('normal case', function() {
+      var u = [4,0,0];
+      var v = [0,6,0];
+      var slerped = KraGL.Math.slerp(u, v, 0.5);
+      var expected = vec3.scale([], vec3.normalize([], [1,1,0]), 5);
+      assert.vecApproximately(slerped, expected, 0.0001);
+    });
+    it('parallel vectors', function() {
+      var u = [2, 0, 0];
+      var v = [4, 0, 0];
+      var slerped = KraGL.Math.slerp(u, v, 0.5);
+      var expected = [3, 0, 0];
+      assert.vecApproximately(slerped, expected, 0.0001);
+    });
+  });
+
+  describe('step', function() {
+    it('normal case', function() {
+      assert.equal(KraGL.Math.step(42, 50), 1);
+      assert.equal(KraGL.Math.step(42, 42), 1);
+      assert.equal(KraGL.Math.step(42, 30), 0);
+    });
+  });
+
+  describe('translate', function() {
+    it('normal case', function() {
+      var pt = KraGL.Math.translate([1,1,1,1], [1,2,3]);
+      var expected = [2,3,4,1];
+      assert.vecApproximately(pt, expected, 0.0001);
+    });
+  });
+
+  describe('unmix', function() {
+    it('normal case', function() {
+      assert.equal(KraGL.Math.unmix(1, [0,4]), 0.25);
+      assert.equal(KraGL.Math.unmix(1, [1,4]), 0);
+      assert.equal(KraGL.Math.unmix(4, [0,4]), 1);
+      assert.equal(KraGL.Math.unmix(-1, [0,4]), -0.25);
+      assert.equal(KraGL.Math.unmix(5, [0,4]), 1.25);
+    });
+  });
+
+  describe('vecParallel', function() {
+    it('normal case', function() {
+      assert(KraGL.Math.vecParallel([1,1,1], [2,2,2]));
+      assert(KraGL.Math.vecParallel([1,2,1], [1,2,1]));
+      assert(KraGL.Math.vecParallel([1,1,1], [-2,-2,-2]));
+      assert(KraGL.Math.vecParallel([1,1,1], [-2,-2,-2]));
+
+      assert(!KraGL.Math.vecParallel([1,1,1], [-1,1,1]));
+      assert(!KraGL.Math.vecParallel([1,2,3], [3,2,1]));
+    });
+  });
+
+  describe('wrap', function() {
+    it('normal case', function() {
+      assert.equal(KraGL.Math.wrap(2, [1,6]), 2);
+      assert.equal(KraGL.Math.wrap(1, [1,6]), 1);
+      assert.equal(KraGL.Math.wrap(6, [1,6]), 1);
+      assert.equal(KraGL.Math.wrap(10, [1,6]), 5);
+      assert.equal(KraGL.Math.wrap(0, [1,6]), 5);
+      assert.equal(KraGL.Math.wrap(-2, [1,6]), 3);
     });
   });
 });

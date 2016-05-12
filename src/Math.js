@@ -31,6 +31,32 @@ define('KraGL.Math', ['KraGL'], function() {
     },
 
     /**
+     * Converts a point in polar (spherical) coordinates to Cartesian coordinates.
+     * The result is a homogenous 3D point.
+     * @param  {vec3} point
+     * @return {vec4}
+     */
+    cartesian: function(point) {
+      point[2] = point[2] || 0;
+
+      var r = point[0];
+      if(r === 0)
+        return [0,0,0,1];
+
+      var cosTheta = Math.cos(point[1]);
+      var sinTheta = Math.sin(point[1]);
+      var cosPhi = Math.cos(point[2]);
+      var sinPhi = Math.sin(point[2]);
+
+      return [
+        r*cosTheta*sinPhi,
+        r*sinTheta*sinPhi,
+        r*cosPhi,
+        1
+      ];
+    },
+
+    /**
      * Constraints a value to lie between two further values.
      * @param  {number} x
      * @param  {number} min
@@ -129,6 +155,25 @@ define('KraGL.Math', ['KraGL'], function() {
     },
 
     /**
+     * Converts a point in Cartesian coordinates to polar
+     * (actually 3D spherical) coordinates.
+     * @param  {(vec3|vec4)} point
+     * @return {vec3}
+     */
+    polar: function(point) {
+      point[2] = point[2] || 0;
+      var dist = vec3.dist(point, [0,0,0]);
+      if(dist === 0)
+        return [0,NaN,NaN];
+      else
+        return [
+          dist,
+          Math.atan2(point[1], point[0]),
+          Math.acos(point[2]/dist)
+        ];
+    },
+
+    /**
      * Converts an angle in degrees to radians.
      * @param  {number} degrees
      * @return {number}
@@ -177,20 +222,39 @@ define('KraGL.Math', ['KraGL'], function() {
     },
 
     /**
-     * Returns the result of some point rotated CCW about some axis by some
-     * angle in radians.
+     * Rotates a point counter-clockwise around an axis.
      * @param  {vec4} p
+     *         The point to be rotated.
      * @param  {vec3} [axis=[0,0,1]]
+     *         The unit vector for the rotation axis.
      * @param  {number} angle
+     *         The angle, in radians.
      * @return {vec4}
+     *         The rotated point.
      */
     rotate: function(p, axis, angle) {
-      if(!isNaN(axis)) {
+      if(isNaN(angle)) {
         angle = axis;
         axis = [0,0,1];
       }
-      var q = quat.setAxisAngle(axis, angle);
-      return vec4.transformFromQuat([], p, q);
+      if(axis[0] === 0 && axis[1] === 0 && axis[2] === 0)
+        return [NaN, NaN, NaN, p[3]];
+      var q = quat.setAxisAngle([], axis, angle);
+      return vec4.transformQuat([], p, q);
+    },
+
+    /**
+     * Rotates a point counter-clockwise around the positive Z axis.
+     * @param  {vec3} p
+     *         The point to be rotated.
+     * @param  {number} angle
+     *         The angle, in radians.
+     * @return {vec3}
+     *         The rotated point.
+     */
+    rotate2D: function(p, angle) {
+      var m = mat3.fromRotation([], angle);
+      return vec3.transformMat3([], p, m);
     },
 
     /**
@@ -202,34 +266,49 @@ define('KraGL.Math', ['KraGL'], function() {
      * @return {number}
      */
     scalarProjection: function(u, v) {
-      var vec = vec2;
+      var clazz = vec2;
       if(u.length === 3)
-        vec = vec3;
+        clazz = vec3;
       if(u.length === 4)
-        vec = vec4;
+        clazz = vec4;
 
-      var uHat = vec.normalize([], u);
-      return vec.dot(uHat, v);
+      var uHat = clazz.normalize([], u);
+      return clazz.dot(uHat, v);
     },
 
 
     /**
-     * Returns the result of some point scaled either uniformly by some
-     * constant or component-wise by some vector.
+     * Scales a point relative to the origin.
      * @param  {vec4} p
      * @param  {(number|vec3)} s
      * @return {vec4}
      */
     scale: function(p, s) {
-      if(!isNaN(s)) {
+      if(!_.isArray(s))
         s = [s,s,s];
-      }
 
       return [
         p[0] * s[0],
         p[1] * s[1],
         p[2] * s[2],
         p[3]
+      ];
+    },
+
+    /**
+     * Scales a 2D point relative to the origin.
+     * @param  {vec3} p
+     * @param  {(number|vec2)} s
+     * @return {vec3}
+     */
+    scale2D: function(p, s) {
+      if(!_.isArray(s))
+        s = [s,s];
+
+      return [
+        p[0] * s[0],
+        p[1] * s[1],
+        p[2]
       ];
     },
 
@@ -242,7 +321,37 @@ define('KraGL.Math', ['KraGL'], function() {
      *         1: positive
      */
     sign: function(x) {
+      if(x === 0)
+        return 0;
       return x/Math.abs(x);
+    },
+
+    /**
+     * Spherically interpolates between two vectors.
+     * @param  {vec3} u
+     *         The start vector.
+     * @param  {vec3} v
+     *         The end vector.
+     * @param  {number} a
+     *         The parametric value
+     * @return {vec3}
+     */
+    slerp: function(u, v, a) {
+      var uHat = vec3.normalize([], u);
+      var vHat = vec3.normalize([], v);
+
+      var nHat = vec3.normalize([], vec3.cross([], u, v));
+      if(nHat.length === 0)
+        return vec3.lerp([], u, v, a);
+
+      var theta = Math.acos(vec3.dot(uHat, vHat))*a;
+
+      var lenU = vec3.len(u);
+      var lenV = vec3.len(v);
+      var length = KraGL.Math.mix(a, [lenU, lenV]);
+
+      var q = quat.setAxisAngle([], nHat, theta);
+      return vec3.scale([], vec3.transformQuat([], uHat, q), length);
     },
 
     /**
@@ -259,48 +368,6 @@ define('KraGL.Math', ['KraGL'], function() {
     },
 
     /**
-     * Converts a point in polar (spherical) coordinates to Cartesian coordinates.
-     * The result is a homogenous 3D point.
-     * @param  {vec3} point
-     * @return {vec4}
-     */
-    toCartesian: function(point) {
-      point[2] = point[2] || 0;
-
-      var r = point[0];
-      var cosTheta = Math.cos(point[1]);
-      var sinTheta = Math.sin(point[1]);
-      var cosPhi = Math.cos(point[2]);
-      var sinPhi = Math.sin(point[2]);
-
-      return [
-        r*cosTheta*sinPhi,
-        r*sinTheta*sinPhi,
-        r*cosPhi,
-        1
-      ];
-    },
-
-
-
-    /**
-     * Converts a point in Cartesian coordinates to polar
-     * (actually 3D spherical) coordinates.
-     * @param  {(vec3|vec4)} point
-     * @return {vec3}
-     */
-    toPolar: function(point) {
-      point[2] = point[2] || 0;
-      var dist = vec3.dist(point, [0,0,0]);
-
-      return [
-        dist,
-        Math.atan2(point[1], point[0]),
-        Math.acos(point[2]/dist)
-      ];
-    },
-
-    /**
      * Returns the result of a point translated by some vector.
      * @param  {vec4} p
      * @param  {vec3} v
@@ -311,35 +378,6 @@ define('KraGL.Math', ['KraGL'], function() {
       result[3] = p[3];
       return result;
     },
-
-    /**
-     * Computes the unit vector parametrically rotated between two vectors.
-     * @param  {vec3} u
-     * @param  {vec3} v
-     * @param  {number} a
-     *         The parametric value
-     * @return {vec3}
-     */
-    tweenVector: function(u, v, a) {
-      u = this.toVec3(u);
-      v = this.toVec3(v);
-
-      var uHat = vec3.normalize([], u);
-      var vHat = vec3.normalize([], v);
-
-      var n = vec3.cross([], u, v);
-      var nLen = vec3.length(n);
-
-      // If the cross product's length is 0, then u and v are already in the
-      // same direction. So just return uHat.
-      if(nLen === 0)
-        return _.clone(uHat);
-
-      var theta = Math.acos(vec3.dot(uHat, vHat))*a;
-      var q = quat.setAxisAngle([], n, theta);
-      return vec3.transformFromQuat([], uHat, q);
-    },
-
 
     /**
      * Inverse of mix().
@@ -359,9 +397,6 @@ define('KraGL.Math', ['KraGL'], function() {
      * @return {boolean}
      */
     vecParallel: function(u, v, tolerance) {
-      u = this.toVec3(u);
-      v = this.toVec3(v);
-
       var sin = vec3.length(vec3.cross([], u, v));
       return KraGL.Math.approx(sin, 0, tolerance);
     },

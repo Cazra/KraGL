@@ -21,7 +21,7 @@ define('KraGL.math.Quaternion', ['KraGL.math'], function() {
       var q1 = this.rotate(xAxis1, xAxis2);
 
       var yAxis1 = startBasis[1];
-      var yAxis2 = vec3.transformFromQuat([], yAxis1, q1);
+      var yAxis2 = vec3.transformQuat([], yAxis1, q1);
       var yAxis3 = endBasis[1];
       return this.rotate(yAxis2, yAxis3);
     },
