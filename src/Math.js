@@ -4,7 +4,7 @@ define('KraGL.Math', ['KraGL'], function() {
   /**
    * @class Math
    * @memberof KraGL
-   * @classdesc A singleton with a bunch of helpful geometric and GLSL
+   * @classdesc A singleton with a bunch of common geometric and GLSL
    * math functions.
    */
   KraGL.Math = {
@@ -102,22 +102,6 @@ define('KraGL.Math', ['KraGL'], function() {
     },
 
     /**
-     * Creates a change of basis matrix from 3 axis vectors. The axis vectors
-     * are assumed to be orthogonal to each other.
-     * @param {vec3} a
-     * @param {vec3} b
-     * @param {vec3} c
-     * @return {mat3}
-     */
-    matChangeBasis: function(a, b, c) {
-      return [
-        a[0], a[1], a[2],
-        b[0], b[1], b[2],
-        c[0], c[1], c[2]
-      ];
-    },
-
-    /**
      * Produces a linear blend the parametric value a in some range.
      * @param {number} a
      * @param {number[]} range
@@ -183,136 +167,6 @@ define('KraGL.Math', ['KraGL'], function() {
     },
 
     /**
-     * Calculates the reflection vector of some incident vector.
-     * See: https://www.opengl.org/sdk/docs/man/html/reflect.xhtml
-     * @param  {vec3} i
-     *         The normalized incident vector.
-     * @param  {vec3} n
-     *         The normalized surface normal vector.
-     * @return {vec3}
-     */
-    reflect: function(i, n) {
-      var scalar = 2*vec3.dot(n, i);
-      return vec3.sub([], i, vec3.scale([], n, scalar));
-    },
-
-    /**
-     * Calculates the refraction vector of some incident vector.
-     * See: https://www.opengl.org/sdk/docs/man/html/refract.xhtml
-     * @param  {vec3} i
-     *         The normalized incident vector.
-     * @param  {vec3} n
-     *         The normalized surface normal vector.
-     * @param  {number} eta
-     *         The ratio of indices of refraction.
-     * @return {vec3}
-     */
-    refract: function(i, n, eta) {
-      var dotNI = vec3.dot(n,i);
-      var k = 1.0 - eta*eta * (1.0 - dotNI*dotNI);
-      if(k < 0)
-        return [0, 0, 0];
-      else {
-        // eta * i - (eta * dot(n, i) + sqrt(k)) * n
-        return vec3.sub([],
-          vec3.scale([], i, eta),
-          vec3.scale([], n, eta*dotNI + Math.sqrt(k))
-        );
-      }
-    },
-
-    /**
-     * Rotates a point counter-clockwise around an axis.
-     * @param  {vec4} p
-     *         The point to be rotated.
-     * @param  {vec3} [axis=[0,0,1]]
-     *         The unit vector for the rotation axis.
-     * @param  {number} angle
-     *         The angle, in radians.
-     * @return {vec4}
-     *         The rotated point.
-     */
-    rotate: function(p, axis, angle) {
-      if(isNaN(angle)) {
-        angle = axis;
-        axis = [0,0,1];
-      }
-      if(axis[0] === 0 && axis[1] === 0 && axis[2] === 0)
-        return [NaN, NaN, NaN, p[3]];
-      var q = quat.setAxisAngle([], axis, angle);
-      return vec4.transformQuat([], p, q);
-    },
-
-    /**
-     * Rotates a point counter-clockwise around the positive Z axis.
-     * @param  {vec3} p
-     *         The point to be rotated.
-     * @param  {number} angle
-     *         The angle, in radians.
-     * @return {vec3}
-     *         The rotated point.
-     */
-    rotate2D: function(p, angle) {
-      var m = mat3.fromRotation([], angle);
-      return vec3.transformMat3([], p, m);
-    },
-
-    /**
-     * Computes the scalar projection of v onto u. This is also the length
-     * of the projection of v onto u.
-     * You can get the projection of v onto u by scaling uHat by this value.
-     * @param  {(vec2|vec3|vec4)} u
-     * @param  {(vec2|vec3|vec4)} v
-     * @return {number}
-     */
-    scalarProjection: function(u, v) {
-      var clazz = vec2;
-      if(u.length === 3)
-        clazz = vec3;
-      if(u.length === 4)
-        clazz = vec4;
-
-      var uHat = clazz.normalize([], u);
-      return clazz.dot(uHat, v);
-    },
-
-
-    /**
-     * Scales a point relative to the origin.
-     * @param  {vec4} p
-     * @param  {(number|vec3)} s
-     * @return {vec4}
-     */
-    scale: function(p, s) {
-      if(!_.isArray(s))
-        s = [s,s,s];
-
-      return [
-        p[0] * s[0],
-        p[1] * s[1],
-        p[2] * s[2],
-        p[3]
-      ];
-    },
-
-    /**
-     * Scales a 2D point relative to the origin.
-     * @param  {vec3} p
-     * @param  {(number|vec2)} s
-     * @return {vec3}
-     */
-    scale2D: function(p, s) {
-      if(!_.isArray(s))
-        s = [s,s];
-
-      return [
-        p[0] * s[0],
-        p[1] * s[1],
-        p[2]
-      ];
-    },
-
-    /**
      * Gets the sign of some number.
      * @param  {number} x
      * @return {int}
@@ -324,34 +178,6 @@ define('KraGL.Math', ['KraGL'], function() {
       if(x === 0)
         return 0;
       return x/Math.abs(x);
-    },
-
-    /**
-     * Spherically interpolates between two vectors.
-     * @param  {vec3} u
-     *         The start vector.
-     * @param  {vec3} v
-     *         The end vector.
-     * @param  {number} a
-     *         The parametric value
-     * @return {vec3}
-     */
-    slerp: function(u, v, a) {
-      var uHat = vec3.normalize([], u);
-      var vHat = vec3.normalize([], v);
-
-      var nHat = vec3.normalize([], vec3.cross([], u, v));
-      if(nHat.length === 0)
-        return vec3.lerp([], u, v, a);
-
-      var theta = Math.acos(vec3.dot(uHat, vHat))*a;
-
-      var lenU = vec3.len(u);
-      var lenV = vec3.len(v);
-      var length = KraGL.Math.mix(a, [lenU, lenV]);
-
-      var q = quat.setAxisAngle([], nHat, theta);
-      return vec3.scale([], vec3.transformQuat([], uHat, q), length);
     },
 
     /**
@@ -368,18 +194,6 @@ define('KraGL.Math', ['KraGL'], function() {
     },
 
     /**
-     * Returns the result of a point translated by some vector.
-     * @param  {vec4} p
-     * @param  {vec3} v
-     * @return {vec4}
-     */
-    translate: function(p, v) {
-      var result = vec4.add([], p, v);
-      result[3] = p[3];
-      return result;
-    },
-
-    /**
      * Inverse of mix().
      * @param  {number} x
      * @param {number[]} range
@@ -387,18 +201,6 @@ define('KraGL.Math', ['KraGL'], function() {
      */
     unmix: function(x, range) {
       return (x - range[0])/(range[1] - range[0]);
-    },
-
-    /**
-     * Checks if two vectors are parallel.
-     * @param {vec3} u
-     * @param {vec3} v
-     * @param {number} tolerance
-     * @return {boolean}
-     */
-    vecParallel: function(u, v, tolerance) {
-      var sin = vec3.length(vec3.cross([], u, v));
-      return KraGL.Math.approx(sin, 0, tolerance);
     },
 
     /**

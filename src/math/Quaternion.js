@@ -37,8 +37,7 @@ define('KraGL.math.Quaternion', ['KraGL.math'], function() {
       var vHat = vec3.normalize([], v);
 
       var angle = Math.acos(vec3.dot(uHat, vHat));
-      var axis = vec3.cross([], uHat, vHat);
-
+      var axis = vec3.normalize([], vec3.cross([], uHat, vHat));
       return quat.setAxisAngle([], axis, angle);
     }
   };

@@ -26,7 +26,6 @@ module.exports = function(grunt) {
       dist: {
         src: ['src/**/*.js'],
         options: {
-          access: 'public',
           destination: 'docs/html'
         }
       }

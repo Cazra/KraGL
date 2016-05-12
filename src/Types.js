@@ -1,6 +1,11 @@
 define('KraGL.Types', ['KraGL'], function() {
   'use strict';
 
+  /**
+   * Shorthand name for WebGLRenderingContext.
+   * @typedef {WebGLRenderingContext} WebGL
+   */
+
   // Type meta-data declarations
   var typeNames = {};
   typeNames[GL_BYTE]            = "BYTE";

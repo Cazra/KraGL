@@ -6,7 +6,8 @@ define('KraGL', [], function() {
 
   /**
    * @class KraGL
-   * @classdesc The top-level object encapsulating the KraGL library.
+   * @classdesc The top-level object encapsulating the KraGL library. This also
+   * acts as a Web GL context.
    */
   KraGL = {
 
