@@ -6,36 +6,27 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
    * @memberof KraGL.math
    * @extends KraGL.math.Shape
    * @classdesc An infinitely spanning plane.
-   * @param {vec4} p
+   * @param {object} options
+   * @param {vec4} [options.p=[0,0,0,1]]
    *        A point lying on the plane.
-   * @param {vec3} n
+   * @param {vec3} [options.n=[0,0,1]]
    *        The normal vector for the plane.
    */
   KraGL.math.Plane = class extends KraGL.math.Shape {
-    constructor(p, n) {
+    constructor(options) {
       super();
-      this._p = KraGL.Math.toVec4(p);
-      this._n = KraGL.Math.toVec3(n);
-      this._recalcPlaneEquation();
+      this.p = options.p || [0,0,0,1];
+      this.n = options.n;
     }
 
     /**
      * @inheritdoc
      */
     clone() {
-      return new KraGL.math.Plane(this._p, this._n);
-    }
-
-    /**
-     * Checks if a point lies on this plane.
-     * @param  {vec4} p
-     * @return {boolean}
-     */
-    containsPoint(p, tolerance) {
-      tolerance = tolerance || 0;
-
-      var dot = vec3.dot(this._n, p);
-      return KraGL.Math.approx(dot, this._d, tolerance);
+      return new KraGL.math.Plane({
+        n: this.n,
+        p: this.p
+      });
     }
 
     /**
@@ -119,10 +110,7 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
 
         // If the parametric value lies in the appropriate range for the type
         // of AbstractLine, then use it to compute the point of intersection.
-        if( line instanceof KraGL.math.Line ||
-            (line instanceof KraGL.math.Ray && alpha >= 0) ||
-            (line instanceof KraGL.math.Segment && alpha >= 0 && alpha <= 1)) {
-
+        if( line.containsProjection(alpha)) {
           var result = vec4.add([], q, vec3.scale([], alpha, u));
           result[3] = 1;
           return result;
@@ -144,43 +132,27 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
     }
 
     /**
-     * Alias for normal()
+     * The plane's normal vector.
+     * @type {vec3}
      */
-    n(n) {
-      return this.normal(n);
-    }
-
-    /**
-     * Gets/sets the normal vector for the plane.
-     * @param  {vec3} n
-     * @return {vec3}
-     */
-    normal(n) {
-      if(n) {
-        this._n = KraGL.Math.toVec3(n);
-        this._recalcPlaneEquation();
-      }
+    get normal() {
       return _.clone(this._n);
     }
-
-    /**
-     * Alias for point().
-     */
-    p(p) {
-      return this.point(p);
+    set normal(n) {
+      this._n = vec3.copy([], n);
+      this._recalcPlaneEquation();
     }
 
     /**
-     * Gets/sets the point for the plane.
-     * @param  {vec4} [p]
-     * @return {vec4}
+     * A point lying on the plane.
+     * @type {vec4}
      */
-    point(p) {
-      if(p) {
-        this._p = KraGL.Math.toVec4(p);
-        this._recalcPlaneEquation();
-      }
+    get point() {
       return _.clone(this._p);
+    }
+    set point(p) {
+      this._p = vec4.copy([], p);
+      this._recalcPlaneEquation();
     }
 
     /**
@@ -194,4 +166,9 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
       this._d = -vec3.dot(this._n, this._p);
     }
   };
+
+  _.aliasProperties(KraGL.math.Plane, {
+    n: 'normal',
+    p: 'point'
+  });
 });

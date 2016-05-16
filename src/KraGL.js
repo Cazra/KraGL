@@ -1,7 +1,7 @@
 
 // Go ahead and define KraGL in the global scope.
 var KraGL;
-define('KraGL', [], function() {
+define('KraGL', ['underscore_ext'], function() {
   'use strict';
 
   /**

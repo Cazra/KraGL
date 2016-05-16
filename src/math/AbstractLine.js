@@ -149,25 +149,6 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
     }
 
     /**
-     * Gets the quaternion for rotating the positive X axis [1, 0, 0] to
-     * this line's vector.
-     * @return {quat}
-     */
-    getQuaternion() {
-      var u = [1,0,0];
-      var v = this.getVector();
-      return KraGL.Math.quatFromTo(u, v);
-    }
-
-    /**
-     * Gets the vector from the first point to the second point.
-     * @return {vec3}
-     */
-    getVector() {
-      return vec3.sub([], this._p2, this._p1);
-    }
-
-    /**
      * @inheritdoc
      */
     intersection(other, tolerance) {
@@ -373,27 +354,25 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
     }
 
     /**
-     * Gets/sets the first point.
-     * @param {vec4} [p]
-     * @return {vec4}
+     * The start point.
+     * @type {vec4}
      */
-    point1(p) {
-      if(p) {
-        this._p1 = KraGL.Math.toVec4(p);
-      }
+    get point1() {
       return _.clone(this._p1);
+    }
+    set point1(p) {
+      this._p1 = vec4.copy([], p);
     }
 
     /**
-     * Gets/sets the second point.
-     * @param {vec4} [p]
-     * @return {vec4}
+     * The end point.
+     * @type {vec4}
      */
-    point2(p) {
-      if(p) {
-        this._p2 = KraGL.Math.toVec4(p);
-      }
+    get point2() {
       return _.clone(this._p2);
+    }
+    set point2(p) {
+      this._p2 = vec4.copy([], p);
     }
 
     /**
@@ -408,6 +387,21 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
       var scaledU = vec3.scale([], u, alpha);
       scaledU[3] = 0;
       return vec4.add([], this._p1, scaledU);
+    }
+
+    /**
+     * The quaternion defining the line's orientation.
+     * @type {quat}
+     */
+    get quaternion() {
+      var u = [1,0,0];
+      var v = this.vector;
+      return KraGL.math.Quaternions.rotate(u, v);
+    }
+    set quaternion(q) {
+      var length = vec4.length(this._p1, this._p2);
+      var v = vec3.scale([], [1,0,0], length);
+      this.vector = vec3.transformQuat([], v, q);
     }
 
     /**
@@ -442,16 +436,24 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
         p2: this._p2
       });
     }
+
+    /**
+     * The vector from point1 to point2.
+     * @type {vec3}
+     */
+    get vector() {
+      return vec3.sub([], this._p2, this._p1);
+    }
+    set vector(v) {
+      this._p2 = vec3.add(this._p1, v);
+      this._p2[3] = 1;
+    }
   };
 
-  // Define method aliases.
-  var proto = KraGL.math.AbstractLine.prototype;
-  _.extend(proto, {
-    dist: proto.distanceTo,
-    p1: proto.point1,
-    p2: proto.point2,
-    quat: proto.getQuaternion,
-    u: proto.getVector,
-    vec: proto.getVector
+  _.aliasProperties(KraGL.math.AbstractLine, {
+    p1: 'point1',
+    p2: 'point2',
+    quat: 'quaternion',
+    vec: 'vector'
   });
 });

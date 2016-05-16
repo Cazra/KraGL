@@ -69,11 +69,7 @@ define('KraGL.math.Shape', ['KraGL.math'], function() {
     }
   };
 
-  // Define some method aliases.
-  var proto = KraGL.math.Shape.prototype;
-  _.extend(proto, {
-    dist: function(shape) {
-      return this.distanceTo(shape);
-    }
+  _.aliasMethods(KraGL.math.Shape, {
+    dist: 'distanceTo'
   });
 });
