@@ -1,21 +1,32 @@
-define('KraGL.math.Quaternion', ['KraGL.math'], function() {
+define('KraGL.math.Quaternions', ['KraGL.math'], function() {
   'use strict';
 
   /**
-   * @class Quaternion
+   * @class Quaternions
    * @memberof KraGL.math
    * @classdesc A collection of static methods for doing Quaternion
    * rotation and orientation operations.
    */
-  KraGL.math.Quaternion = {
+  KraGL.math.Quaternions = {
 
     /**
-     * Returns the quaternion for orienting startBasis to endBasis.
-     * @param  {basis} startBasis
+     * Returns the quaternion for orienting from one unit basis to another.
+     * @param  {basis} [startBasis]
+     *         The starting basis. If not specified, then a unit axis basis
+     *         [[1,0,0], [0,1,0], [0,0,1]] will be used.
      * @param  {basis} endBasis
      * @return {quat}
      */
     orient: function(startBasis, endBasis) {
+      if(!endBasis) {
+        endBasis = startBasis;
+        startBasis = [
+          [1,0,0],
+          [0,1,0],
+          [0,0,1]
+        ];
+      }
+
       var xAxis1 = startBasis[0];
       var xAxis2 = endBasis[0];
       var q1 = this.rotate(xAxis1, xAxis2);
@@ -23,7 +34,8 @@ define('KraGL.math.Quaternion', ['KraGL.math'], function() {
       var yAxis1 = startBasis[1];
       var yAxis2 = vec3.transformQuat([], yAxis1, q1);
       var yAxis3 = endBasis[1];
-      return this.rotate(yAxis2, yAxis3);
+      var q2 = this.rotate(yAxis2, yAxis3);
+      return quat.multiply([], q2, q1);
     },
 
     /**
