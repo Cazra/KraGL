@@ -16,7 +16,7 @@ define('KraGL.math.Shape', ['KraGL.math'], function() {
      * Checks if this shape contains a point, within some level of
      * tolerance for distance.
      * @param  {vec4} p
-     * @param  {number} [tolerance=0]
+     * @param  {number} [tolerance=KraGL.EPSILON]
      * @return {boolean}
      */
     contains(p, tolerance) {
@@ -38,7 +38,7 @@ define('KraGL.math.Shape', ['KraGL.math'], function() {
      * Gets the intersection of this shape with some other shape,
      * or undefined if there is no intersection.
      * @param  {KraGL.math.Shape} shape
-     * @param {number} [tolerance=0]
+     * @param {number} [tolerance=KraGL.EPSILON]
      *   The tolerance for how close they can be to be considered
      *   "close enough" for an intersection.
      * @return {(vec4|KraGL.math.Shape)}
@@ -51,7 +51,7 @@ define('KraGL.math.Shape', ['KraGL.math'], function() {
     /**
      * Checks whether this shape intersects another shape.
      * @param  {KraGL.math.Shape} shape
-     * @param {number} [tolerance=0]
+     * @param {number} [tolerance=KraGL.EPSILON]
      *   The tolerance for how close they can be to be considered
      *   "close enough" for an intersection.
      * @return {boolean}

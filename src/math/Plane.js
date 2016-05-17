@@ -11,12 +11,14 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
    *        A point lying on the plane.
    * @param {vec3} [options.n=[0,0,1]]
    *        The normal vector for the plane.
+   * @throws Error if normal vector is [0,0,0].
    */
   KraGL.math.Plane = class extends KraGL.math.Shape {
     constructor(options) {
       super();
+      options = options || {};
       this.p = options.p || [0,0,0,1];
-      this.n = options.n;
+      this.n = options.n || [0,0,1];
     }
 
     /**
@@ -55,11 +57,15 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
      */
     _distanceToPoint(q) {
       var v = vec3.sub([], q, this._p);
+      var lenV = vec3.len(v);
+      if(lenV === 0)
+        return 0;
+
       var vHat = vec3.normalize([], v);
       var nHat = vec3.normalize([], this._n);
       var dotNV = vec3.dot(vHat, nHat);
 
-      return vec3.len(v)*Math.abs(dotNV);
+      return lenV*Math.abs(dotNV);
     }
 
     /**
@@ -86,10 +92,10 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
      */
     _intersectionAbstractLine(line) {
       var p = this._p;
-      var q = line.p1();
+      var q = line.p1;
 
       var n = this._n;
-      var u = line.getVector();
+      var u = line.vec;
       var v = vec3.sub([], p, q);
 
       var dotNV = vec3.dot(n, v);
@@ -111,7 +117,7 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
         // If the parametric value lies in the appropriate range for the type
         // of AbstractLine, then use it to compute the point of intersection.
         if( line.containsProjection(alpha)) {
-          var result = vec4.add([], q, vec3.scale([], alpha, u));
+          var result = vec3.add([], q, vec3.scale([], u, alpha));
           result[3] = 1;
           return result;
         }
@@ -122,13 +128,23 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
 
 
     /**
-     * Checks if some AbstractLine is parallel
-     * @param  {KraGL.math.AbstractLine}  line
+     * Checks if an AbstractLine or a Plane is parallel to this.
+     * @param  {(KraGL.math.AbstractLine|KraGL.math.Plane)}  other
+     * @param {number} [tolerance=KraGL.EPSILON]
      * @return {Boolean}
      */
-    isParallelToLine(line) {
-      var v = line.getVector();
-      return vec3.dot(this._n, v) === 0;
+    isParallel(other, tolerance) {
+      if(other instanceof KraGL.math.AbstractLine) {
+        var dotNV = vec3.dot(this._n, other.vec);
+        return KraGL.Math.approx(dotNV, 0, tolerance);
+      }
+      else if(other instanceof KraGL.math.Plane) {
+        var sinNormals = vec3.length(vec3.cross([], this.n, other.n));
+        return KraGL.Math.approx(sinNormals, 0, tolerance);
+      }
+      else {
+        return false;
+      }
     }
 
     /**
@@ -139,6 +155,9 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
       return _.clone(this._n);
     }
     set normal(n) {
+      if(_.isEqual(n, [0,0,0]))
+        throw new Error('Normal cannot be [0,0,0].');
+
       this._n = vec3.copy([], n);
       this._recalcPlaneEquation();
     }
@@ -152,6 +171,7 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
     }
     set point(p) {
       this._p = vec4.copy([], p);
+      this._p[3] = 1;
       this._recalcPlaneEquation();
     }
 
@@ -163,7 +183,8 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
      * @private
      */
     _recalcPlaneEquation() {
-      this._d = -vec3.dot(this._n, this._p);
+      if(this._n && this._p)
+        this._d = -vec3.dot(this._n, this._p);
     }
   };
 

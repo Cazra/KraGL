@@ -20,11 +20,11 @@ define('KraGL.Math', ['KraGL'], function() {
      * tolerance.
      * @param  {number} x
      * @param  {number} y
-     * @param  {number} [tolerance=0]
+     * @param  {number} [tolerance=KraGL.EPSILON]
      * @return {boolean}
      */
     approx: function(x, y, tolerance) {
-      tolerance = tolerance || 0;
+      tolerance = tolerance || KraGL.EPSILON;
       if(tolerance < 0)
         throw new Error('Negative tolerance value not allowed.');
       return Math.abs(x - y) <= tolerance;

@@ -17,8 +17,14 @@ _.extend(chai.assert, {
       var x = u[i];
       var y = v[i];
 
-      if(!isNaN(x) || !isNaN(y))
-        chai.assert.approximately(x, y, delta);
+      if(!isNaN(x) || !isNaN(y)) {
+        try {
+          chai.assert.approximately(x, y, delta);
+        }
+        catch(err) {
+          throw new Error('expected ' + u + ' to be close to ' + v);
+        }
+      }
     });
   }
 });

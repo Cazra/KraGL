@@ -12,6 +12,12 @@ define('KraGL', ['underscore_ext'], function() {
   KraGL = {
 
     /**
+     * The default tolerance value.
+     * @type {Number}
+     */
+    EPSILON: 0.00001,
+
+    /**
      * Returns the version string in major.minor.build form.
      * @return {string}
      */

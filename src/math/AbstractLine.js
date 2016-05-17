@@ -12,6 +12,7 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
    *        A point that the line passes through.
    * @param {vec4} options.p2
    *        Another point that the line passes through.
+   * @throws Error if the endpoints are the same.
    */
   KraGL.math.AbstractLine = class extends KraGL.math.Shape {
     constructor(options) {
