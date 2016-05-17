@@ -32,9 +32,9 @@ define('KraGL.math.Triangle', ['KraGL.math.Shape'], function() {
       var u = options.u;
       var v = options.v;
 
-      this._p1 = _.clone(p1);
-      this._p2 = _.clone(p2) || KraGL.Math.translate(p1, u);
-      this._p3 = _.clone(p3) || KraGL.Math.translate(p1, v);
+      this.p1 = p1;
+      this.p2 = p2 || KraGL.math.Transforms.translatePt(p1, u);
+      this.p3 = p3 || KraGL.math.Transforms.translatePt(p1, v);
     }
 
     /**
@@ -47,75 +47,82 @@ define('KraGL.math.Triangle', ['KraGL.math.Shape'], function() {
     }
 
     /**
-     * Gets/sets the first point.
-     * @param  {vec4} p
-     * @return {vec4}
+     * The triangle's unit surface normal (uHat x vHat).
+     * @type {vec3}
      */
-    point1(p) {
-      if(p)
-        this._p1 = _.clone(p);
-      return _.clone(this._p1);
+    get normal() {
+      return vec3.normalize([], vec3.cross([], this.u, this.v));
+    }
+    set normal(n) {
+      _.noop(n);
+      throw new Error('Cannot set normal.');
     }
 
     /**
-     * Gets/sets the second point.
-     * @param  {vec4} p
-     * @return {vec4}
+     * The first point.
+     * @type {vec4}
      */
-    point2(p) {
-      if(p)
-        this._p2 = _.clone(p);
-      return _.clone(this._p2);
+    get point1() {
+      return this._p1;
+    }
+    set point1(p) {
+      this._p1 = vec4.copy([], p);
+      this._p1[3] = 1;
     }
 
     /**
-     * Gets/sets the third point.
-     * @param  {vec4} p
-     * @return {vec4}
+     * The second point.
+     * @type {vec4}
      */
-    point3(p) {
-      if(p)
-        this._p3 = _.clone(p);
-      return _.clone(this._p3);
+    get point2() {
+      return this._p2;
+    }
+    set point2(p) {
+      this._p2 = vec4.copy([], p);
+      this._p2[3] = 1;
     }
 
     /**
-     * Gets/sets the vector U from p1 to p2.
-     * @param {vec3} u
-     * @return {vec3}
+     * The third point.
+     * @type {vec4}
      */
-    vecU(u) {
-      if(u) {
-        this._p2 = KraGL.Math.translate(this._p1, u);
-        return _.clone(u);
-      }
-      else
-        return vec3.sub([], this._p2, this._p1);
+    get point3() {
+      return this._p3;
+    }
+    set point3(p) {
+      this._p3 = vec4.copy([], p);
+      this._p3[3] = 1;
     }
 
     /**
-     * Gets/sets the vector V from p1 to p3.
-     * @param  {vec3} v
-     * @return {vec3}
+     * The vector from point1 to point2.
+     * @type {vec3}
      */
-    vecV(v) {
-      if(v) {
-        this._p3 = KraGL.Math.translate(this._p1, v);
-        return _.clone(v);
-      }
-      else
-        return vec3.sub([], this._p3, this._p1);
+    get vectorU() {
+      return vec3.sub([], this.p2, this.p1);
+    }
+    set vectorU(u) {
+      this.p2 = KraGL.math.Transforms.translatePt(this.p1, u);
+    }
+
+    /**
+     * The vector from point1 to point3.
+     * @type {vec3}
+     */
+    get vectorV() {
+      return vec3.sub([], this._p3, this.p1);
+    }
+    set vectorV(v) {
+      this.p3 = KraGL.math.Transforms.translatePt(this.p1, v);
     }
   };
 
-  // Define some method aliases.
-  var proto = KraGL.math.Triangle.prototype;
-  _.extend(proto, {
-    n: proto.getNormal,
-    p1: proto.point1,
-    p2: proto.point2,
-    p3: proto.point3,
-    u: proto.vectorU,
-    v: proto.vectorV
+  _.aliasProperties(KraGL.math.Triangle, {
+    n: 'normal',
+    p1: 'point1',
+    p2: 'point2',
+    p3: 'point3',
+    u: 'vectorU',
+    v: 'vectorV'
   });
 });
