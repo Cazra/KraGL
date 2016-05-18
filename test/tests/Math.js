@@ -15,15 +15,19 @@ describe('KraGL.Math', function() {
       assert.isTrue(KraGL.Math.approx(1e-10, 0, 0.0001));
       assert.isFalse(KraGL.Math.approx(1e-2, 0, 1e-4));
 
+      assert.isTrue(KraGL.Math.approx(1, 1.1, 0.11));
+
       assert.isTrue(KraGL.Math.approx(3, 3));
       assert.isFalse(KraGL.Math.approx(1, 2));
+    });
+    it('rounding error case', function() {
+      assert.isFalse(KraGL.Math.approx(1, 1.1, 0.1));
     });
     it('bad case - NaN', function() {
       assert.isFalse(KraGL.Math.approx(undefined, 0, 0.0001));
       assert.isFalse(KraGL.Math.approx(undefined, 10, 0.0001));
       assert.isFalse(KraGL.Math.approx(0, undefined, 0.0001));
       assert.isFalse(KraGL.Math.approx(2, undefined, 0.0001));
-      assert.isFalse(KraGL.Math.approx(2.00001, 2, undefined));
     });
     it('bad case - negative tolerance', function() {
       assert.throws(function() {

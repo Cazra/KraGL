@@ -41,7 +41,7 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
         if(shape instanceof KraGL.math.AbstractLine) {
           return this._distanceToAbstractLine(shape);
         }
-        throw new Error('Not implemented yet.');
+        throw new Error('Shape not supported: ' + shape);
       }
 
       // Assume that the argument is a point (A vec4).
@@ -77,7 +77,7 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
       if(shape instanceof KraGL.math.AbstractLine)
         return this._intersectionAbstractLine(shape);
       else
-        throw new Error('Not implemented yet.');
+        throw new Error('Shape not supported: ' + shape);
     }
 
     /**
@@ -142,9 +142,8 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
         var sinNormals = vec3.length(vec3.cross([], this.n, other.n));
         return KraGL.Math.approx(sinNormals, 0, tolerance);
       }
-      else {
-        return false;
-      }
+      else
+        throw new Error('Shape not supported: ' + other);
     }
 
     /**

@@ -18,6 +18,7 @@ define('KraGL.Math', ['KraGL'], function() {
     /**
      * Tests if some value approximately equals another value within some
      * tolerance.
+     * This does not do corrections for base-2 rounding errors.
      * @param  {number} x
      * @param  {number} y
      * @param  {number} [tolerance=KraGL.EPSILON]
@@ -27,6 +28,7 @@ define('KraGL.Math', ['KraGL'], function() {
       tolerance = tolerance || KraGL.EPSILON;
       if(tolerance < 0)
         throw new Error('Negative tolerance value not allowed.');
+
       return Math.abs(x - y) <= tolerance;
     },
 

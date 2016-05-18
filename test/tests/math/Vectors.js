@@ -4,6 +4,36 @@ var assert = chai.assert;
 
 describe('KraGL.math.Vectors', function() {
 
+  describe('approx', function() {
+    it('normal case', function() {
+      assert.isTrue(KraGL.math.Vectors.approx([1,2,3,4], [1,2,3,4]));
+      assert.isFalse(KraGL.math.Vectors.approx([1.1, 1.9, 3.1, 4.1], [1,2,3,4], 0.001));
+      assert.isTrue(KraGL.math.Vectors.approx([1.1, 1.9, 3.1, 4.1], [1,2,3,4], 0.11));
+      assert.isFalse(KraGL.math.Vectors.approx([2,3,4,5], [1,2,3,4]));
+    });
+    it('rounding error case', function() {
+      assert.isFalse(KraGL.math.Vectors.approx([1.1, 1.9, 3.1, 4.1], [1,2,3,4], 0.1));
+    });
+    it('bad case - different lengths', function() {
+      assert.throws(function() {
+        KraGL.math.Vectors.approx([1,2,3], [1,2,3,4]);
+      });
+    });
+  });
+
+  describe('equal', function() {
+    it('normal case', function() {
+      assert.isTrue(KraGL.math.Vectors.equal([1,2,3,4], [1,2,3,4]));
+      assert.isFalse(KraGL.math.Vectors.equal([1,2,3,4], [2,3,4,5]));
+      assert.isFalse(KraGL.math.Vectors.equal([1,2,3,4], [1.00001, 2.00001, 3.00001, 4.00001]));
+    });
+    it('bad case - different lengths', function() {
+      assert.throws(function() {
+        KraGL.math.Vectors.equal([1,2,3], [1,2,3,4]);
+      });
+    });
+  });
+
   describe('parallel', function() {
     it('normal case', function() {
       assert(KraGL.math.Vectors.parallel([1,1,1], [2,2,2]));

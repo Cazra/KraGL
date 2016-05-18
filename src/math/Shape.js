@@ -26,6 +26,7 @@ define('KraGL.math.Shape', ['KraGL.math'], function() {
     /**
      * Gets the distance from this shape to either a point or some
      * other shape.
+     * @abstract
      * @param  {(vec4|KraGL.math.Shape)} shape
      * @return {number}
      */
@@ -37,6 +38,7 @@ define('KraGL.math.Shape', ['KraGL.math'], function() {
     /**
      * Gets the intersection of this shape with some other shape,
      * or undefined if there is no intersection.
+     * @abstract
      * @param  {KraGL.math.Shape} shape
      * @param {number} [tolerance=KraGL.EPSILON]
      *   The tolerance for how close they can be to be considered

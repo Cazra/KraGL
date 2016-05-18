@@ -9,6 +9,42 @@ define('KraGL.math.Vectors', ['KraGL.math'], function() {
   KraGL.math.Vectors = {
 
     /**
+     * Checks if two vectors are approximately equal.
+     * This does not do corrections for base-2 rounding errors.
+     * @param  {(vec2|vec3|vec4)} u
+     * @param  {(vec2|vec3|vec4)} v
+     * @param  {number} tolerance
+     * @return {boolean}
+     */
+    approx: function(u, v, tolerance) {
+      if(u.length !== v.length)
+        throw new Error('Vectors must be same length.');
+
+      return _.chain(_.range(u.length))
+        .find(function(index) {
+          return !KraGL.Math.approx(u[index], v[index], tolerance);
+        })
+        .isUndefined().value();
+    },
+
+    /**
+     * Checks if two vectors are exactly equal.
+     * @param  {(vec2|vec3|vec4)} u
+     * @param  {(vec2|vec3|vec4)} v
+     * @return {boolean}
+     */
+    equal: function(u, v) {
+      if(u.length !== v.length)
+        throw new Error('Vectors must be same length.');
+
+      return _.chain(_.range(u.length))
+        .find(function(index) {
+          return u[index] !== v[index];
+        })
+        .isUndefined().value();
+    },
+
+    /**
      * Checks if two vectors are parallel.
      * @param {vec3} u
      * @param {vec3} v
