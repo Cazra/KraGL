@@ -17,11 +17,8 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
   KraGL.math.AbstractLine = class extends KraGL.math.Shape {
     constructor(options) {
       super();
-      this._p1 = KraGL.Math.point(options.p1);
-      this._p2 = KraGL.Math.point(options.p2);
-
-      if(_.isEqual(this._p1, this._p2))
-        throw new Error('Line endpoints cannot be the same.');
+      this.p1 = options.p1;
+      this.p2 = options.p2;
     }
 
     /**
@@ -362,7 +359,12 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
       return _.clone(this._p1);
     }
     set point1(p) {
-      this._p1 = vec4.copy([], p);
+      p = vec4.copy([], p);
+      p[3] = 1;
+
+      if(this._p2 && KraGL.math.Vectors.equal(p, this._p2))
+        throw new Error('Line endpoints cannot be the same.');
+      this._p1 = p;
     }
 
     /**
@@ -373,7 +375,12 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
       return _.clone(this._p2);
     }
     set point2(p) {
-      this._p2 = vec4.copy([], p);
+      p = vec4.copy([], p);
+      p[3] = 1;
+
+      if(this._p1 && KraGL.math.Vectors.equal(p, this._p1))
+        throw new Error('Line endpoints cannot be the same.');
+      this._p2 = p;
     }
 
     /**
@@ -446,7 +453,7 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
       return vec3.sub([], this._p2, this._p1);
     }
     set vector(v) {
-      this._p2 = vec3.add(this._p1, v);
+      this._p2 = vec3.add([], this._p1, v);
       this._p2[3] = 1;
     }
   };
