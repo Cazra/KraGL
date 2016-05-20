@@ -13,6 +13,17 @@ define('KraGL.math.Shape', ['KraGL.math'], function() {
     constructor() {}
 
     /**
+     * Checks if this Shape is approximately equal to another Shape.
+     * @param  {KraGL.math.Shape} other
+     * @param {number} [tolerance]
+     * @return {Boolean}
+     */
+    equal(other, tolerance) {
+      _.noop(other, tolerance);
+      throw new Error('Must be implemented by subclass.');
+    }
+
+    /**
      * Checks if this shape contains a point, within some level of
      * tolerance for distance.
      * @param  {vec4} p

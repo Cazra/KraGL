@@ -19,6 +19,15 @@ define('KraGL.math.Segment', ['KraGL.math.AbstractLine'], function() {
     /**
      * @inheritdoc
      */
+    approx(other, tolerance) {
+      return other instanceof KraGL.math.Segment &&
+        KraGL.math.Vectors.equal(this.p1, other.p1, tolerance) &&
+        KraGL.math.Vectors.equal(this.p2, other.p2, tolerance);
+    }
+
+    /**
+     * @inheritdoc
+     */
     clone() {
       return this.toSegment();
     }

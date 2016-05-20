@@ -17,6 +17,15 @@ define('KraGL.math.Line', ['KraGL.math.AbstractLine'], function() {
     /**
      * @inheritdoc
      */
+    approx(other, tolerance) {
+      return other instanceof KraGL.math.Line &&
+        this.contains(other.p1, tolerance) &&
+        this.contains(other.p2, tolerance);
+    }
+
+    /**
+     * @inheritdoc
+     */
     clone() {
       return this.toLine();
     }
@@ -29,6 +38,5 @@ define('KraGL.math.Line', ['KraGL.math.AbstractLine'], function() {
       _.noop(alpha);
       return true;
     }
-
   };
 });

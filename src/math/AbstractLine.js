@@ -40,7 +40,8 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
         if(shape instanceof KraGL.math.AbstractLine)
           return this._distanceToAbstractLine(shape);
         else
-          throw new Error('Shape not supported: ' + shape);
+          // Delegate to the higher-level shape.
+          return shape.distanceTo(this);
       }
 
       // Assume shape is a point.
@@ -92,8 +93,12 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
      * @return {number}
      */
     _distanceToPoint(p) {
-      var u = this.vec();
+      var u = this.vec;
       var v = vec3.sub([], p, this._p1);
+      var lenV = vec3.length(v);
+      if(lenV === 0)
+        return 0;
+
       var uHat = vec3.normalize([], u);
       var vHat = vec3.normalize([], v);
 
@@ -104,7 +109,7 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
       var alpha = scaleProjUV/vec3.length(u);
       if(this.containsProjection(alpha)) {
         var sinUV = vec3.len(vec3.cross([], uHat, vHat));
-        return vec3.length(v)*Math.abs(sinUV);
+        return lenV*Math.abs(sinUV);
       }
       else {
         var distP1 = vec4.dist(p, this._p1);
@@ -131,9 +136,9 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
      *         The second value is the other line's coefficient.
      */
     _getClosestLineCoeffs(other) {
-      var u = this.getVector();
+      var u = this.vec;
       var uHat = vec3.normalize([], u);
-      var v = other.getVector();
+      var v = other.vec;
       var vHat = vec3.normalize([], v);
       var z = vec3.sub([], other._p1, this._p1);
 
@@ -150,11 +155,11 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
      * @inheritdoc
      */
     intersection(other, tolerance) {
-      if(other instanceof KraGL.math.AbstractLine) {
+      if(other instanceof KraGL.math.AbstractLine)
         return this._intersectionAbstractLine(other, tolerance);
-      }
-
-      throw new Error('Shape not supported: ' + other);
+      else
+        // Delegate to the higher-level shape.
+        return other.intersection(this, tolerance);
     }
 
     /**
@@ -306,7 +311,7 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
 
       if(this.containsProjection(alpha) && other.containsProjection(beta)) {
         var p = this.projection(alpha);
-        var q = this.projection(beta);
+        var q = other.projection(beta);
 
         var dist = vec4.dist(p, q);
         if(KraGL.Math.approx(dist, 0, tolerance))
@@ -325,8 +330,8 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
      * @return {Boolean}
      */
     isCollinear(other, tolerance) {
-      var u = this.getVector();
-      var v = other.getVector();
+      var u = this.vec;
+      var v = other.vec;
       var w = vec3.sub([], this._p1, other._p1);
 
       var sinUV = vec3.length(vec3.cross([], u, v));
@@ -343,8 +348,8 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
      * @return {boolean}
      */
     isParallel(other, tolerance) {
-      var u = this.getVector();
-      var v = other.getVector();
+      var u = this.vec;
+      var v = other.vec;
 
       var sinUV = vec3.length(vec3.cross([], u, v));
 
@@ -391,7 +396,7 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
      *         The projected point.
      */
     projection(alpha) {
-      var u = this.getVector();
+      var u = this.vec;
       var scaledU = vec3.scale([], u, alpha);
       scaledU[3] = 0;
       return vec4.add([], this._p1, scaledU);
