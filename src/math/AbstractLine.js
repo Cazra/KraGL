@@ -342,18 +342,23 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
     }
 
     /**
-     * Checks whether this AbstractLine is paralell to another AbstractLine.
-     * @param  {KraGL.math.AbstractLine}  other
+     * Checks whether this AbstractLine is parallel to another Shape.
+     * @param  {KraGL.math.Shape}  other
      * @param {number} tolerance
      * @return {boolean}
      */
     isParallel(other, tolerance) {
-      var u = this.vec;
-      var v = other.vec;
+      if(other instanceof KraGL.math.AbstractLine) {
+        var u = this.vec;
+        var v = other.vec;
 
-      var sinUV = vec3.length(vec3.cross([], u, v));
+        var sinUV = vec3.length(vec3.cross([], u, v));
 
-      return KraGL.Math.approx(sinUV, 0, tolerance);
+        return KraGL.Math.approx(sinUV, 0, tolerance);
+      }
+      else {
+        return other.isParallel(this, tolerance);
+      }
     }
 
     /**

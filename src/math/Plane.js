@@ -76,6 +76,8 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
     intersection(shape) {
       if(shape instanceof KraGL.math.AbstractLine)
         return this._intersectionAbstractLine(shape);
+      else if(shape instanceof KraGL.math.Plane)
+        return this._intersectionPlane(shape);
       else
         throw new Error('Shape not supported: ' + shape);
     }
@@ -123,6 +125,53 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
         }
         else
           return undefined;
+      }
+    }
+
+    // TODO
+    _intersectionPlane(other) {
+
+      // If the planes are parallel, they are either the same plane, or they
+      // never intersect.
+      if(this.isParallel(other)) {
+        if(other.contains(this.p))
+          return this.clone();
+        else
+          return undefined;
+      }
+
+      // Non-parallel planes will always intersect on a line.
+      else {
+        var p = this.p;
+        var m = this.n;
+
+        var q = other.p;
+        var n = other.n;
+
+        // The vector for the line.
+        var u = vec3.cross([], m, n);
+
+        // Get the normal for the plane through the origin that the line can
+        // intersect with.
+        var w;
+        if(u[3] === 0)
+          w = [1,0,0];
+        else
+          w = [0,0,1];
+
+        var mat = [
+          m[0], n[0], w[0],
+          m[1], n[1], w[1],
+          m[2], n[2], w[2]
+        ];
+        var matInv = mat3.invert([], mat);
+        var p1 = mat3.mul([], matInv, [vec3.dot(p,m), vec3.dot(q,n), 0]);
+        var p2 = vec3.add([], p1, u);
+
+        return new KraGL.math.Line({
+          p1: p1,
+          p2: p2
+        });
       }
     }
 

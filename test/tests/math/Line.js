@@ -235,15 +235,42 @@ describe('KraGL.math.Line', function() {
       });
     });
 
-    describe.skip('Plane', function() {
+    describe('PlanarShape', function() {
       it('point', function() {
-        throw new Error('TODO');
+        var line = new KraGL.math.Line({
+          p1: [0,2,0],
+          p2: [4,-2,0]
+        });
+        var plane = new KraGL.math.Plane({
+          p: [0,0,0],
+          n: [0,1,0]
+        });
+        var intr = line.intersection(plane);
+        assert.vecApproximately(intr, [2,0,0,1], 0.0001);
       });
-      it('line', function() {
-        throw new Error('TODO');
+      it('AbstractLine', function() {
+        var line = new KraGL.math.Line({
+          p1: [0,0,0],
+          p2: [1,0,1]
+        });
+        var plane = new KraGL.math.Plane({
+          p: [0,0,0],
+          n: [0,1,0]
+        });
+        var intr = line.intersection(plane);
+        assert.isTrue(intr.approx(line));
       });
       it('no intersection', function() {
-        throw new Error('TODO');
+        var line = new KraGL.math.Line({
+          p1: [0,1,0],
+          p2: [1,1,1]
+        });
+        var plane = new KraGL.math.Plane({
+          p: [0,0,0],
+          n: [0,1,0]
+        });
+        var intr = line.intersection(plane);
+        assert.isUndefined(intr);
       });
     });
 
@@ -469,8 +496,22 @@ describe('KraGL.math.Line', function() {
       });
       assert.isFalse(line.isParallel(seg));
     });
-    it.skip('PlanarShape', function() {
+    it('PlanarShape', function() {
+      var line = new KraGL.math.Line({
+        p1: [0,1,0],
+        p2: [1,1,1]
+      });
+      var plane = new KraGL.math.Plane({
+        p: [0,0,0],
+        n: [0,1,0]
+      });
+      assert.isTrue(line.isParallel(plane));
 
+      line = new KraGL.math.Line({
+        p1: [0,0,0],
+        p2: [1,1,1]
+      });
+      assert.isFalse(line.isParallel(plane));
     });
   });
 

@@ -316,15 +316,53 @@ describe('KraGL.math.Plane', function() {
       });
     });
 
-    describe.skip('Plane', function() {
+    describe('Plane', function() {
       it('plane', function() {
-        throw new Error('TODO');
+        var plane1 = new KraGL.math.Plane({
+          p: [0,0,0],
+          n: [1,1,0]
+        });
+        var plane2 = new KraGL.math.Plane({
+          p: [0,0,2],
+          n: [2,2,0]
+        });
+
+        var actual = plane1.intersection(plane2);
+        assert.isTrue(actual instanceof KraGL.math.Plane);
+        assert.isTrue(actual.isParallel(plane1));
+        assert.isTrue(actual.contains(plane1.p));
       });
       it('line', function() {
-        throw new Error('TODO');
+        var plane1 = new KraGL.math.Plane({
+          p: [0,0,0],
+          n: [1,0,0]
+        });
+        var plane2 = new KraGL.math.Plane({
+          p: [2,4,0],
+          n: [1,1,0]
+        });
+
+        var actual = plane1.intersection(plane2);
+        assert.isTrue(actual instanceof KraGL.math.Line);
+
+        console.log(actual.p1);
+        console.log(actual.vec);
+
+        assert.isTrue(plane1.contains(actual.p1) && plane2.contains(actual.p1));
+        assert.vecApproximately(actual.vec, [0,0,1], 0.0001);
       });
       it('no intersection', function() {
-        throw new Error('TODO');
+        var plane1 = new KraGL.math.Plane({
+          p: [0,0,0],
+          n: [1,1,0]
+        });
+        var plane2 = new KraGL.math.Plane({
+          p: [0,1,2],
+          n: [2,2,0]
+        });
+
+        var actual = plane1.intersection(plane2);
+        assert.isUndefined(actual);
       });
     });
 
