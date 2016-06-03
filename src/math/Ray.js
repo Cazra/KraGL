@@ -9,7 +9,7 @@ define('KraGL.math.Ray', ['KraGL.math.AbstractLine'], function() {
    * @param {object} options
    *        See AbstractLine.
    */
-  KraGL.math.Ray = class extends KraGL.math.AbstractLine {
+  KraGL.math.Ray = class Ray extends KraGL.math.AbstractLine {
     constructor(options) {
       super(options);
     }
@@ -42,4 +42,6 @@ define('KraGL.math.Ray', ['KraGL.math.AbstractLine'], function() {
       return alpha >= 0;
     }
   };
+
+  KraGL.math.AbstractLine.checkImpl(KraGL.math.Ray);
 });

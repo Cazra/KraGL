@@ -9,16 +9,16 @@ define('KraGL.math.Shape', ['KraGL.math'], function() {
    * @implements {Cloneable}
    * @classdesc Abstract base class for 2D and 3D shapes.
    */
-  KraGL.math.Shape = class {
+  KraGL.math.Shape = class Shape {
     constructor() {}
 
     /**
      * Checks if this Shape is approximately equal to another Shape.
      * @param  {KraGL.math.Shape} other
-     * @param {number} [tolerance]
+     * @param {number} [tolerance=KraGL.EPSILON]
      * @return {Boolean}
      */
-    equal(other, tolerance) {
+    approx(other, tolerance) {
       _.noop(other, tolerance);
       throw new Error('Must be implemented by subclass.');
     }
@@ -79,6 +79,22 @@ define('KraGL.math.Shape', ['KraGL.math'], function() {
     render(ctx) {
       _.noop(ctx);
       throw new Error('Must be implemented by subclass.');
+    }
+
+    /**
+     * Checks if a subclass of this class implements all of its abstract
+     * methods.
+     * A warning is printed to the console for any abstract methods that are
+     * not implemented.
+     */
+    static checkImpl(clazz) {
+      return _.checkAbstractImpl(clazz, this, [
+        'approx',
+        'clone',
+        'distanceTo',
+        'intersection',
+        'render'
+      ]);
     }
   };
 

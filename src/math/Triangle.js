@@ -1,10 +1,10 @@
-define('KraGL.math.Triangle', ['KraGL.math.Shape'], function() {
+define('KraGL.math.Triangle', ['KraGL.math.PlanarShape'], function() {
   'use strict';
 
   /**
    * @class Triangle
    * @memberof KraGL.math
-   * @extends KraGL.math.Shape
+   * @extends KraGL.math.PlanarShape
    * @classdesc A triangle in 3D space defined by either 3 points or 1 point and 2 vectors.
    * To define the triangle by its points, specify the options p1, p2, and p3
    * in the constructor.
@@ -24,7 +24,7 @@ define('KraGL.math.Triangle', ['KraGL.math.Shape'], function() {
    * @param {vec3} [options.v]
    *        The vector from the first point to the third point.
    */
-  KraGL.math.Triangle = class extends KraGL.math.Shape {
+  KraGL.math.Triangle = class Triangle extends KraGL.math.PlanarShape {
     constructor(options) {
       var p1 = options.p1 || options.p;
       var p2 = options.p2;
@@ -35,6 +35,27 @@ define('KraGL.math.Triangle', ['KraGL.math.Shape'], function() {
       this.p1 = p1;
       this.p2 = p2 || KraGL.math.Transforms.translatePt(p1, u);
       this.p3 = p3 || KraGL.math.Transforms.translatePt(p1, v);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    approx(other, tolerance) {
+      // Two triangles are considered approximately equal if they have
+      // approximately the same set of points.
+      if(other instanceof KraGL.math.Triangle) {
+        var thisPts = this.points;
+        var otherPts = other.points;
+
+        _.each(thisPts, function(p) {
+          var q = _.find(otherPts, function(q) {
+            return KraGL.math.Vectors.approx(p, q, tolerance);
+          });
+          otherPts = _.without(otherPts, q);
+        });
+        return otherPts.length === 0;
+      }
+      return false;
     }
 
     /**
@@ -139,6 +160,16 @@ define('KraGL.math.Triangle', ['KraGL.math.Shape'], function() {
             .min().value();
         })
         .min().value();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getPlane() {
+      return new KraGL.math.Plane({
+        p: this.p1,
+        n: this.nHat
+      });
     }
 
     /**
@@ -305,15 +336,17 @@ define('KraGL.math.Triangle', ['KraGL.math.Shape'], function() {
     }
 
     /**
-     * Produces a Plane containing this Triangle.
-     * @return {KraGL.math.Plane}
+     * A list of the 3 points.
+     * @type {vec4[]}
      */
-    toPlane() {
-      return new KraGL.math.Plane({
-        p: this.p1,
-        n: this.nHat
-      });
-    }
+     get points() {
+       return [this._p1, this._p2, this._p3];
+     }
+     set points(pts) {
+       this.p1 = pts[0];
+       this.p2 = pts[1];
+       this.p3 = pts[2];
+     }
 
     /**
      * Produces the Segments forming the Triangle's sides.
@@ -349,6 +382,8 @@ define('KraGL.math.Triangle', ['KraGL.math.Shape'], function() {
       this.p3 = KraGL.math.Transforms.translatePt(this.p1, v);
     }
   };
+
+  KraGL.math.PlanarShape.checkImpl(KraGL.math.Triangle);
 
   _.aliasProperties(KraGL.math.Triangle, {
     nHat: 'normal',

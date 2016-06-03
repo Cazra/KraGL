@@ -9,7 +9,7 @@ define('KraGL.math.Line', ['KraGL.math.AbstractLine'], function() {
    * @param  {object} options
    *         See AbstractLine.
    */
-  KraGL.math.Line = class extends KraGL.math.AbstractLine {
+  KraGL.math.Line = class Line extends KraGL.math.AbstractLine {
     constructor(options) {
       super(options);
     }
@@ -39,4 +39,6 @@ define('KraGL.math.Line', ['KraGL.math.AbstractLine'], function() {
       return true;
     }
   };
+
+  KraGL.math.AbstractLine.checkImpl(KraGL.math.Line);
 });

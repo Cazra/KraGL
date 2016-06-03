@@ -174,6 +174,31 @@ describe('KraGL.math.Line', function() {
     });
   });
 
+  describe('getPlane', function() {
+    it('normal case', function() {
+      var line = new KraGL.math.Line({
+        p1: [0,0,0],
+        p2: [1,0,0]
+      });
+      var plane = line.getPlane();
+      assert.isTrue(plane.contains(line));
+
+      var line = new KraGL.math.Line({
+        p1: [0,4,0],
+        p2: [0,0,0]
+      });
+      var plane = line.getPlane();
+      assert.isTrue(plane.contains(line));
+
+      var line = new KraGL.math.Line({
+        p1: [1,1,0],
+        p2: [3,-1,5]
+      });
+      var plane = line.getPlane();
+      assert.isTrue(plane.contains(line));
+    });
+  });
+
   describe('intersection', function() {
     describe('Line', function() {
       it('point', function() {

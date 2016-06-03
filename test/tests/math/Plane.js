@@ -79,6 +79,40 @@ describe('KraGL.math.Plane', function() {
     });
   });
 
+  describe('approx', function() {
+    it('normal case', function() {
+      var plane1 = new KraGL.math.Plane({
+        p: [1,1,1],
+        n: [0,1,0]
+      });
+
+      var plane2 = new KraGL.math.Plane({
+        p: [2,1,0],
+        n: [0,1,0]
+      });
+
+      var plane3 = new KraGL.math.Plane({
+        p: [3,1,4],
+        n: [0,4,0]
+      });
+
+      assert.isTrue(plane1.approx(plane2));
+      assert.isTrue(plane1.approx(plane3));
+
+      var plane4 = new KraGL.math.Plane({
+        p: [2,3,4],
+        n: [0,1,0]
+      });
+
+      var plane5 = new KraGL.math.Plane({
+        p: [1,1,1],
+        n: [1,1,1]
+      });
+
+      assert.isFalse(plane1.approx(plane4));
+      assert.isFalse(plane1.approx(plane5));
+    });
+  });
 
   describe('contains', function() {
     it('true', function() {
@@ -117,6 +151,17 @@ describe('KraGL.math.Plane', function() {
     });
   });
 
+  describe('getPlane', function() {
+    it('normal case', function() {
+      var plane = new KraGL.math.Plane({
+        p: [1,1,1],
+        n: [0,1,0]
+      });
+
+      var result = plane.getPlane();
+      assert.isTrue(plane.approx(result));
+    });
+  });
 
   describe('intersection', function() {
     describe('Line', function() {
@@ -344,9 +389,6 @@ describe('KraGL.math.Plane', function() {
 
         var actual = plane1.intersection(plane2);
         assert.isTrue(actual instanceof KraGL.math.Line);
-
-        console.log(actual.p1);
-        console.log(actual.vec);
 
         assert.isTrue(plane1.contains(actual.p1) && plane2.contains(actual.p1));
         assert.vecApproximately(actual.vec, [0,0,1], 0.0001);

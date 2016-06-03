@@ -1,10 +1,10 @@
-define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
+define('KraGL.math.AbstractLine', ['KraGL.math.PlanarShape'], function() {
   'use strict';
 
   /**
    * @class AbstractLine
    * @memberof KraGL.math
-   * @extends KraGL.math.Shape
+   * @extends KraGL.math.PlanarShape
    * @classdesc Abstract base class for line-like shapes, such as Lines,
    * Rays, and Segments.
    * @param  {object} options
@@ -14,7 +14,7 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
    *        Another point that the line passes through.
    * @throws Error if the endpoints are the same.
    */
-  KraGL.math.AbstractLine = class extends KraGL.math.Shape {
+  KraGL.math.AbstractLine = class AbstractLine extends KraGL.math.PlanarShape {
     constructor(options) {
       super();
       this.p1 = options.p1;
@@ -24,6 +24,7 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
     /**
      * Checks if a projected point p = p1 + alpha*u is within the bounds of
      * this type of line.
+     * @abstract
      * @param  {number} alpha
      * @return {boolean}
      */
@@ -84,6 +85,25 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
 
         return Math.min(dist1, dist2, dist3, dist4);
       }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getPlane() {
+      // Lines can actually exist in the pencil of all the planes rotated about
+      // them. For this method, we just need one though.
+      var u = this.vec;
+      var v = [0,0,1];
+      if(KraGL.math.Vectors.parallel(u, v))
+        v = [1,0,0];
+      var w = vec3.cross([], u, v);
+      var n = vec3.cross([], u, w);
+
+      return new KraGL.math.Plane({
+        p: this.p1,
+        n: n
+      });
     }
 
     /**
@@ -465,6 +485,20 @@ define('KraGL.math.AbstractLine', ['KraGL.math.Shape'], function() {
     set vector(v) {
       this._p2 = vec3.add([], this._p1, v);
       this._p2[3] = 1;
+    }
+
+    /**
+     * Checks if a subclass of this class implements all of its abstract
+     * methods.
+     * A warning is printed to the console for any abstract methods that are
+     * not implemented.
+     */
+    static checkImpl(clazz) {
+      var superUnimpl = KraGL.math.PlanarShape.checkImpl(clazz);
+      var subUnimpl = _.checkAbstractImpl(clazz, this, [
+        'containsProjection'
+      ]);
+      return superUnimpl.concat(subUnimpl);
     }
   };
 

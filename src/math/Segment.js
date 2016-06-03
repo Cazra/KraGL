@@ -11,7 +11,7 @@ define('KraGL.math.Segment', ['KraGL.math.AbstractLine'], function() {
    * @param {vec4} p2
    *        The second endpoint.
    */
-  KraGL.math.Segment = class extends KraGL.math.AbstractLine {
+  KraGL.math.Segment = class Segment extends KraGL.math.AbstractLine {
     constructor(p1, p2) {
       super(p1, p2);
     }
@@ -41,4 +41,5 @@ define('KraGL.math.Segment', ['KraGL.math.AbstractLine'], function() {
     }
   };
 
+  KraGL.math.AbstractLine.checkImpl(KraGL.math.Segment);
 });

@@ -1,10 +1,10 @@
-define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
+define('KraGL.math.Plane', ['KraGL.math.PlanarShape'], function() {
   'use strict';
 
   /**
    * @class Plane
    * @memberof KraGL.math
-   * @extends KraGL.math.Shape
+   * @extends KraGL.math.PlanarShape
    * @classdesc An infinitely spanning plane.
    * @param {object} options
    * @param {vec4} [options.p=[0,0,0,1]]
@@ -13,12 +13,23 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
    *        The normal vector for the plane.
    * @throws Error if normal vector is [0,0,0].
    */
-  KraGL.math.Plane = class extends KraGL.math.Shape {
+  KraGL.math.Plane = class Plane extends KraGL.math.PlanarShape {
     constructor(options) {
       super();
       options = options || {};
       this.p = options.p || [0,0,0,1];
       this.n = options.n || [0,0,1];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    approx(other, tolerance) {
+      if(other instanceof KraGL.math.Plane) {
+        return this.isParallel(other) &&
+          this.contains(other.p, tolerance);
+      }
+      return false;
     }
 
     /**
@@ -49,6 +60,41 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
     }
 
     /**
+     * Gets the distance between this Plane and an AbstractLine.
+     * @private
+     * @param  {KraGL.math.AbstractLine} line
+     * @return {number}
+     */
+    _distanceToAbstractLine(line) {
+      var p = this._p;
+      var q = line.p1;
+
+      var n = this._n;
+      var u = line.vec;
+      var v = vec3.sub([], p, q);
+
+      var dotNV = vec3.dot(n, v);
+      var dotNU = vec3.dot(n, u);
+
+      // Is the line parallel to the plane?
+      if(dotNU === 0)
+        // Just get the distance to one of the line's points.
+        return this.distanceTo(line.p1);
+      else {
+        var alpha = dotNV/dotNU;
+
+        // If the parametric value lies in the appropriate range for the type
+        // of AbstractLine, then it intersects and the distance is 0.
+        if( line.containsProjection(alpha))
+          return 0;
+
+        // Otherwise, get the distance to the closest point.
+        else
+          return Math.min(this.distanceTo(line.p1), this.distanceTo(line.p2));
+      }
+    }
+
+    /**
      * Gets the distance of a point to this plane.
      * This is the length of the projection of the point onto the normal.
      * @private
@@ -67,6 +113,14 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
 
       return lenV*Math.abs(dotNV);
     }
+
+    /**
+     * @inheritdoc
+     */
+    getPlane() {
+      return this.clone();
+    }
+
 
     /**
      * Finds the intersection between this plane and some Shape.
@@ -128,7 +182,13 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
       }
     }
 
-    // TODO
+    /**
+     * Gets the intersection between this and another Plane. The result
+     * could be a line, an identical plane, or no intersection.
+     * @private
+     * @param  {KraGL.math.Plane} other
+     * @return {(KraGL.math.Line|KraGL.math.Plane)}
+     */
     _intersectionPlane(other) {
 
       // If the planes are parallel, they are either the same plane, or they
@@ -235,6 +295,8 @@ define('KraGL.math.Plane', ['KraGL.math.Shape'], function() {
         this._d = -vec3.dot(this._n, this._p);
     }
   };
+
+  KraGL.math.PlanarShape.checkImpl(KraGL.math.Plane);
 
   _.aliasProperties(KraGL.math.Plane, {
     n: 'normal',

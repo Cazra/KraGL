@@ -39,6 +39,26 @@ define('underscore_ext', [], function() {
         var descriptor = Object.getOwnPropertyDescriptor(proto, original);
         Object.defineProperty(clazz.prototype, alias, descriptor);
       });
+    },
+
+    /**
+     * Checks if a class implements the specified abstract methods of a
+     * parent class.
+     * Any that aren't implemented have a warning printed to the console.
+     * @param  {class} clazz
+     * @param  {class} parentClazz
+     * @param  {string[]} methods
+     * @return {string[]}
+     *         The list of unimplemented abstract methods.
+     */
+    checkAbstractImpl: function(clazz, parentClazz, methods) {
+      return _.filter(methods, function(method) {
+        if(clazz.prototype[method] === parentClazz.prototype[method]) {
+          console.warn(clazz.name + ' does not implement ' + parentClazz.name +
+            '.'  + method + '.');
+          return true;
+        }
+      });
     }
   });
 });
