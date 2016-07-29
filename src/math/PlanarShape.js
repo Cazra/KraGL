@@ -22,13 +22,34 @@ define('KraGL.math.PlanarShape', ['KraGL.math.Shape'], function() {
     }
 
     /**
-     * Checks if another PlanarShape is parallel to this one.
+     * Checks if another PlanarShape is coplanar with this one.
      * @param  {KraGL.math.PlanarShape}  other
      * @return {Boolean}
      */
-    isParallel(other) {
-      _.noop(other);
-      throw new Error('Must be implemented by subclass.');
+    isCoplanar(other, tolerance) {
+      var tPlane = this.getPlane();
+      var oPlane = other.getPlane();
+      return tPlane.approx(oPlane, tolerance);
+    }
+
+    /**
+     * Checks if another PlanarShape or an AbstractLine is parallel to this.
+     * @param {(KraGL.math.PlanarShape|KraGL.math.AbstractLine)}  other
+     * @param {number} [tolerance=KraGL.Math.EPSILON]
+     * @return {Boolean}
+     */
+    isParallel(other, tolerance) {
+      var tPlane = this.getPlane();
+      if(other instanceof KraGL.math.AbstractLine) {
+        var dotNV = vec3.dot(tPlane.n, other.vec);
+        return KraGL.Math.approx(dotNV, 0, tolerance);
+      }
+      else if(other instanceof KraGL.math.Plane) {
+        var sinNormals = vec3.length(vec3.cross([], tPlane.n, other.n));
+        return KraGL.Math.approx(sinNormals, 0, tolerance);
+      }
+      else
+        throw new Error('Shape not supported: ' + other);
     }
 
     /**
@@ -40,8 +61,7 @@ define('KraGL.math.PlanarShape', ['KraGL.math.Shape'], function() {
     static checkImpl(clazz) {
       var superUnimpl = KraGL.math.Shape.checkImpl(clazz);
       var subUnimpl = _.checkAbstractImpl(clazz, this, [
-        'getPlane',
-        'isParallel'
+        'getPlane'
       ]);
       return superUnimpl.concat(subUnimpl);
     }

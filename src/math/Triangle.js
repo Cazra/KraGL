@@ -26,6 +26,7 @@ define('KraGL.math.Triangle', ['KraGL.math.PlanarShape'], function() {
    */
   KraGL.math.Triangle = class Triangle extends KraGL.math.PlanarShape {
     constructor(options) {
+      super();
       var p1 = options.p1 || options.p;
       var p2 = options.p2;
       var p3 = options.p3;
@@ -76,7 +77,9 @@ define('KraGL.math.Triangle', ['KraGL.math.PlanarShape'], function() {
       if(shape instanceof KraGL.math.Shape) {
         if(shape instanceof KraGL.math.AbstractLine)
           return this._distanceToAbstractLine(shape);
-        if(shape instanceof KraGL.math.Triangle)
+        else if(shape instanceof KraGL.math.Plane)
+          return this._distToPlane(shape);
+        else if(shape instanceof KraGL.math.Triangle)
           return this._distToTriangle(shape);
         else
           throw new Error('Shape not supported: ' + shape);
@@ -122,18 +125,34 @@ define('KraGL.math.Triangle', ['KraGL.math.PlanarShape'], function() {
       if(this.isPointAbove(p)) {
         var wHat = vec3.normalize([], vec3.sub([], p, this.p1));
         var cosNW = vec3.dot(wHat, this.nHat);
-        return cosNW*vec3.dist(p, this.p1);
+        return Math.abs(cosNW*vec3.dist(p, this.p1));
       }
 
       // Otherwise, get the nearest distance to one of its sides.
       else {
         var segs = this.toSegments();
-        _.chain(segs)
+        return _.chain(segs)
           .map(function(seg) {
             return seg.dist(p);
           })
           .min().value();
       }
+    }
+
+    /**
+     * @private
+     * @param  {KraGL.math.Plane} other
+     * @return {number}
+     */
+    _distToPlane(other) {
+      var segs = this.toSegments();
+
+      // Find the minimum distance from one of the triangle's segments to the plane.
+      return _.chain(segs)
+        .map(function(seg) {
+          return other.dist(seg);
+        })
+        .min().value();
     }
 
     /**
@@ -176,9 +195,10 @@ define('KraGL.math.Triangle', ['KraGL.math.PlanarShape'], function() {
      * @inheritdoc
      */
     intersection(shape, tolerance) {
-      if(shape instanceof KraGL.math.AbstractLine) {
+      if(shape instanceof KraGL.math.AbstractLine)
         return this._intersectionAbstractLine(shape, tolerance);
-      }
+      if(shape instanceof KraGL.math.Plane)
+        return this._intersectionPlane(shape, tolerance);
       throw new Error('Shape not supported: ' + shape);
     }
 
@@ -244,7 +264,7 @@ define('KraGL.math.Triangle', ['KraGL.math.PlanarShape'], function() {
       // Skew case
       else {
         var plane = this.toPlane();
-        var planeIntr = plane.intersection(line);
+        var planeIntr = plane.intersection(line, tolerance);
 
         if(this.isPointAbove(planeIntr))
           return planeIntr;
@@ -254,17 +274,51 @@ define('KraGL.math.Triangle', ['KraGL.math.PlanarShape'], function() {
     }
 
     /**
-     * Checks if this Triangle's plane is parallel with some other planar shape.
-     * @param  {KraGL.math.Shape}  shape
-     * @return {Boolean}
+     * @private
+     * @param  {KraGL.math.Plane} plane
+     * @param {number} [tolerance]
+     * @return {(vec4|KraGL.math.Segment|KraGL.math.Triangle)}
      */
-    isParallel(shape) {
-      var plane = this.toPlane();
-      return plane.isParallel(shape);
+    _intersectionPlane(plane, tolerance) {
+      var crossNormals = vec3.cross([], this.n, plane.n);
+
+      // Parallel case
+      if(KraGL.Math.approx(vec3.length(crossNormals), 0, tolerance)) {
+        if(plane.contains(this.p1, tolerance))
+          return this.clone();
+        else
+          return undefined;
+      }
+
+      // Skew case
+      else {
+        var segs = this.toSegments();
+        var intersections = [];
+        var intersectOnSeg = _.find(segs, function(seg) {
+          var intersection = plane.intersection(seg, tolerance);
+          if(intersection instanceof KraGL.math.Segment) {
+            intersections = [intersection];
+            return true;
+          }
+          else if(intersection)
+            intersections.push(intersection);
+        });
+
+        if(intersectOnSeg || intersections.length === 1)
+          return intersections[0];
+        else if(intersections.length === 2)
+          return new KraGL.math.Segment({
+            p1: intersections[0],
+            p2: intersections[1]
+          });
+        else
+          return undefined;
+      }
     }
 
     /**
-     * Checks if a point is directly above/below the triangle.
+     * Checks if a point is directly above, below, or inside the area of the
+     * triangle.
      * @param  {vec4}  p
      * @return {Boolean}
      */
@@ -354,9 +408,9 @@ define('KraGL.math.Triangle', ['KraGL.math.PlanarShape'], function() {
      */
     toSegments() {
       return [
-        KraGL.math.Segment({ p1: this.p1, p2: this.p2 }),
-        KraGL.math.Segment({ p1: this.p2, p2: this.p3 }),
-        KraGL.math.Segment({ p1: this.p3, p2: this.p1 })
+        new KraGL.math.Segment({ p1: this.p1, p2: this.p2 }),
+        new KraGL.math.Segment({ p1: this.p2, p2: this.p3 }),
+        new KraGL.math.Segment({ p1: this.p3, p2: this.p1 })
       ];
     }
 
@@ -386,6 +440,7 @@ define('KraGL.math.Triangle', ['KraGL.math.PlanarShape'], function() {
   KraGL.math.PlanarShape.checkImpl(KraGL.math.Triangle);
 
   _.aliasProperties(KraGL.math.Triangle, {
+    n: 'normal',
     nHat: 'normal',
     p1: 'point1',
     p2: 'point2',

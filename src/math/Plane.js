@@ -235,26 +235,6 @@ define('KraGL.math.Plane', ['KraGL.math.PlanarShape'], function() {
       }
     }
 
-
-    /**
-     * Checks if an AbstractLine or a Plane is parallel to this.
-     * @param  {(KraGL.math.AbstractLine|KraGL.math.Plane)}  other
-     * @param {number} [tolerance=KraGL.EPSILON]
-     * @return {Boolean}
-     */
-    isParallel(other, tolerance) {
-      if(other instanceof KraGL.math.AbstractLine) {
-        var dotNV = vec3.dot(this._n, other.vec);
-        return KraGL.Math.approx(dotNV, 0, tolerance);
-      }
-      else if(other instanceof KraGL.math.Plane) {
-        var sinNormals = vec3.length(vec3.cross([], this.n, other.n));
-        return KraGL.Math.approx(sinNormals, 0, tolerance);
-      }
-      else
-        throw new Error('Shape not supported: ' + other);
-    }
-
     /**
      * The plane's normal vector.
      * @type {vec3}

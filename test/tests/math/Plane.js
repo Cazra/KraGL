@@ -452,6 +452,32 @@ describe('KraGL.math.Plane', function() {
     });
   });
 
+  describe('isCoplanar', function() {
+    it('Plane', function() {
+      var plane = new KraGL.math.Plane({
+        p: [1,1,1],
+        n: [0,1,0]
+      });
+      var other = new KraGL.math.Plane({
+        p: [1,2,1],
+        n: [0,1,0]
+      });
+      assert.isFalse(plane.isCoplanar(other));
+
+      other = new KraGL.math.Plane({
+        p: [2,1,2],
+        n: [0,1,0]
+      });
+      assert.isTrue(plane.isCoplanar(other));
+
+      other = new KraGL.math.Plane({
+        p: [1,2,1],
+        n: [1,1,1]
+      });
+      assert.isFalse(plane.isCoplanar(other));
+    });
+  });
+
   describe('isParallel', function() {
     it('Line', function() {
       var plane = new KraGL.math.Plane({
