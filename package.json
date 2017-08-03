@@ -1,14 +1,33 @@
 {
-  "name": "KraGL",
-  "author": "Stephen (Cazra) Lindberg",
-  "version": "0.1.0",
+  "name": "kragl",
+  "version": "2.0.0",
+  "description": "An ES6 WebGL game engine.",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cazra/KraGL.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Cazra/KraGL/issues"
+  },
+  "homepage": "https://github.com/Cazra/KraGL#readme",
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-contrib-concat": "^0.5.1",
-    "grunt-contrib-jshint": "^0.12.0",
-    "grunt-contrib-uglify": "^0.11.0",
-    "grunt-jsdoc": "^1.1.0",
-    "grunt-mocha-test": "^0.12.7",
-    "mocha": "^2.4.5"
+    "babel-preset-es2015": "^6.24.1",
+    "babelify": "^7.3.0",
+    "grunt": "^1.0.1",
+    "grunt-babel": "^6.0.0",
+    "grunt-browserify": "^5.0.0",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-contrib-uglify": "^3.0.1",
+    "grunt-jsdoc": "^2.1.0",
+    "grunt-string-replace": "^1.3.1"
   }
 }
