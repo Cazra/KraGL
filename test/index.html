@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>KraGL tests</title>
+  <link rel="stylesheet" media="all" href="vendor/mocha.css">
+</head>
+<body>
+  <div id="mocha"><p><a href=".">Index</a></p></div>
+  <div id="messages"></div>
+  <div id="fixtures"></div>
+  <script src="vendor/mocha.js"></script>
+  <script src="vendor/chai.js"></script>
+  <script src="../bin/KraGL.cat.js"></script>
+  <script>
+    mocha.setup({
+      ui: 'bdd'
+    })
+  </script>
+  <script src="chai_ext.js"></script>
+
+  <script src="tests/math/index.js"></script>
+  <script src="tests/math/Line.js"></script>
+  <script src="tests/math/Plane.js"></script>
+  <script src="tests/math/Quaternions.js"></script>
+  <script src="tests/math/Transforms.js"></script>
+  <script src="tests/math/Triangle.js"></script>
+  <script src="tests/math/Vectors.js"></script>
+
+
+  <script>mocha.run();</script>
+
+
+</body>
+</html>

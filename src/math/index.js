@@ -1,5 +1,7 @@
 'use strict';
 
+import { Vectors } from './Vectors';
+
 /**
  * The namespace for mathematical utilities and classes.
  * @namespace math
@@ -35,7 +37,7 @@ var math = /** @lends KraGL.math */ {
    * @return {vec4}
    */
   cartesian: pt => {
-    let polar = vec3(pt);
+    let polar = math.vec3(pt);
 
     let r = polar[0];
     if(r === 0)
@@ -252,6 +254,8 @@ var math = /** @lends KraGL.math */ {
       dx += dRange;
 
     return range[0] + dx;
-  }
+  },
+
+  Vectors
 };
 export { math };
