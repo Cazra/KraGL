@@ -40,13 +40,6 @@ describe('KraGL.math.Transforms', function() {
       assert.vecApproximately(rotated, expected, 0.0001);
     });
 
-    it('default axis', function() {
-      var pt = [2, 2, 1, 1];
-      var rotated = KraGL.math.Transforms.rotatePt(pt, Math.PI/4);
-      var expected = [0, Math.sqrt(8), 1, 1];
-      assert.vecApproximately(rotated, expected, 0.0001);
-    });
-
     it('bad case - 0 vector', function() {
       var pt = [2, 2, 1, 1];
       var axis = [0, 0, 0];

@@ -1,5 +1,7 @@
 'use strict';
 
+import { Quaternions } from './Quaternions';
+import { Transforms } from './Transforms';
 import { Vectors } from './Vectors';
 
 /**
@@ -256,6 +258,8 @@ var math = /** @lends KraGL.math */ {
     return range[0] + dx;
   },
 
+  Quaternions,
+  Transforms,
   Vectors
 };
 export { math };
