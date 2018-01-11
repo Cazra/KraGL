@@ -1,6 +1,12 @@
 'use strict';
 
+import { Line } from './Line';
+import { LinearShape } from './LinearShape';
+import { MathError } from './MathError';
 import { Quaternions } from './Quaternions';
+import { Ray } from './Ray';
+import { Segment } from './Segment';
+import { Shape } from './Shape';
 import { Transforms } from './Transforms';
 import { Vectors } from './Vectors';
 
@@ -258,7 +264,13 @@ var math = /** @lends KraGL.math */ {
     return range[0] + dx;
   },
 
+  Line,
+  LinearShape,
+  MathError,
   Quaternions,
+  Ray,
+  Segment,
+  Shape,
   Transforms,
   Vectors
 };

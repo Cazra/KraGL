@@ -23,7 +23,7 @@ describe('KraGL.math.Line', function() {
     });
   });
 
-  describe('point1', function() {
+  describe('p1', function() {
     it('normal case', function() {
       var line = new KraGL.math.Line({
         p1: [1,2,3],
@@ -31,15 +31,12 @@ describe('KraGL.math.Line', function() {
       });
 
       assert.vecApproximately(line.p1, [1,2,3,1], 0.0001);
-      assert.vecApproximately(line.point1, [1,2,3,1], 0.0001);
 
-      line.point1 = [2,3,4];
+      line.p1 = [2,3,4];
       assert.vecApproximately(line.p1, [2,3,4,1], 0.0001);
-      assert.vecApproximately(line.point1, [2,3,4,1], 0.0001);
 
       line.p1 = [3,4,5];
       assert.vecApproximately(line.p1, [3,4,5,1], 0.0001);
-      assert.vecApproximately(line.point1, [3,4,5,1], 0.0001);
     });
     it('bad case - same endpoints', function() {
       assert.throws(function() {
@@ -53,7 +50,7 @@ describe('KraGL.math.Line', function() {
     });
   });
 
-  describe('point2', function() {
+  describe('p2', function() {
     it('normal case', function() {
       var line = new KraGL.math.Line({
         p1: [1,2,3],
@@ -61,15 +58,12 @@ describe('KraGL.math.Line', function() {
       });
 
       assert.vecApproximately(line.p2, [5,6,7,1], 0.0001);
-      assert.vecApproximately(line.point2, [5,6,7,1], 0.0001);
 
-      line.point2 = [2,3,4];
+      line.p2 = [2,3,4];
       assert.vecApproximately(line.p2, [2,3,4,1], 0.0001);
-      assert.vecApproximately(line.point2, [2,3,4,1], 0.0001);
 
       line.p2 = [3,4,5];
       assert.vecApproximately(line.p2, [3,4,5,1], 0.0001);
-      assert.vecApproximately(line.point2, [3,4,5,1], 0.0001);
     });
     it('bad case - same endpoints', function() {
       assert.throws(function() {
@@ -83,21 +77,13 @@ describe('KraGL.math.Line', function() {
     });
   });
 
-  describe('quaternion', function() {
+  describe('quat', function() {
     it('normal case', function() {
       var line = new KraGL.math.Line({
         p1: [1,1,1],
         p2: [2,3,4]
       });
 
-      var q = line.quaternion;
-      var pt = [1,0,0,1];
-      pt = vec4.transformQuat([], pt, q);
-      var expected = vec3.normalize([], [1,2,3]);
-      expected[3] = 1;
-      assert.vecApproximately(pt, expected, 0.0001);
-
-      // Alias test
       var q = line.quat;
       var pt = [1,0,0,1];
       pt = vec4.transformQuat([], pt, q);
@@ -107,17 +93,15 @@ describe('KraGL.math.Line', function() {
     });
   });
 
-  describe('vector', function() {
+  describe('vec', function() {
     it('normal case', function() {
       var line = new KraGL.math.Line({
         p1: [1,1,1],
         p2: [2,3,4]
       });
-
-      assert.vecApproximately(line.vector, [1,2,3], 0.0001);
       assert.vecApproximately(line.vec, [1,2,3], 0.0001);
 
-      line.vector = [2,0,0];
+      line.vec = [2,0,0];
       assert.vecApproximately(line.vec, [2,0,0], 0.0001);
       assert.vecApproximately(line.p2, [3,1,1,1], 0.0001);
 
@@ -158,23 +142,23 @@ describe('KraGL.math.Line', function() {
   });
 
 
-  describe('distanceTo', function() {
+  describe('dist', function() {
     it('normal case', function() {
       var line = new KraGL.math.Line({
         p1: [1,1,1],
         p2: [5,1,1]
       });
 
-      assert.approximately(line.distanceTo([1,3,1,1]), 2, 0.0001);
-      assert.approximately(line.distanceTo([5,1,10,1]), 9, 0.0001);
-      assert.approximately(line.distanceTo([1,1,1,1]), 0, 0.0001);
-      assert.approximately(line.distanceTo([5,1,1,1]), 0, 0.0001);
-      assert.approximately(line.distanceTo([100,1,1,1]), 0, 0.0001);
-      assert.approximately(line.distanceTo([42,3,1,1]), 2, 0.0001);
+      assert.approximately(line.dist([1,3,1,1]), 2, 0.0001);
+      assert.approximately(line.dist([5,1,10,1]), 9, 0.0001);
+      assert.approximately(line.dist([1,1,1,1]), 0, 0.0001);
+      assert.approximately(line.dist([5,1,1,1]), 0, 0.0001);
+      assert.approximately(line.dist([100,1,1,1]), 0, 0.0001);
+      assert.approximately(line.dist([42,3,1,1]), 2, 0.0001);
     });
   });
 
-  describe('getPlane', function() {
+  describe.skip('getPlane', function() {
     it('normal case', function() {
       var line = new KraGL.math.Line({
         p1: [0,0,0],
@@ -260,7 +244,7 @@ describe('KraGL.math.Line', function() {
       });
     });
 
-    describe('PlanarShape', function() {
+    describe.skip('PlanarShape', function() {
       it('point', function() {
         var line = new KraGL.math.Line({
           p1: [0,2,0],
@@ -521,7 +505,7 @@ describe('KraGL.math.Line', function() {
       });
       assert.isFalse(line.isParallel(seg));
     });
-    it('PlanarShape', function() {
+    it.skip('PlanarShape', function() {
       var line = new KraGL.math.Line({
         p1: [0,1,0],
         p2: [1,1,1]
@@ -552,12 +536,6 @@ describe('KraGL.math.Line', function() {
       assert.vecApproximately(line.projection(0), [1, 1, 1, 1], 0.0001);
       assert.vecApproximately(line.projection(2), [3, 5, 7, 1], 0.0001);
       assert.vecApproximately(line.projection(-1), [0, -1, -2, 1], 0.0001);
-    });
-  });
-
-  describe.skip('render', function() {
-    it('normal case', function() {
-
     });
   });
 
