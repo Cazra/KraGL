@@ -5,6 +5,7 @@ import { LinearShape } from './LinearShape';
 /**
  * A line extending infinitely in 1 direction.
  * @memberof KraGL.math
+ * @extends KraGL.math.LinearShape
  */
 class Ray extends LinearShape {
   constructor(options) {

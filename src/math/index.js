@@ -3,6 +3,7 @@
 import { Line } from './Line';
 import { LinearShape } from './LinearShape';
 import { MathError } from './MathError';
+import { Plane } from './Plane';
 import { Quaternions } from './Quaternions';
 import { Ray } from './Ray';
 import { Segment } from './Segment';
@@ -267,6 +268,7 @@ var math = /** @lends KraGL.math */ {
   Line,
   LinearShape,
   MathError,
+  Plane,
   Quaternions,
   Ray,
   Segment,

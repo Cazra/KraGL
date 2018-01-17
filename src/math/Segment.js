@@ -5,6 +5,7 @@ import { LinearShape } from './LinearShape';
 /**
  * A line finitely bound by 2 endpoints.
  * @memberof KraGL.math
+ * @extends KraGL.math.LinearShape
  */
 class Segment extends LinearShape {
   constructor(options) {

@@ -9,6 +9,7 @@ import { Vectors } from './Vectors';
  * Superclass for 3D line-like shapes such as lines, rays, and segments.
  * @abstract
  * @memberof KraGL.math
+ * @extends KraGL.math.Shape
  */
 class LinearShape extends Shape {
 
@@ -66,6 +67,13 @@ class LinearShape extends Shape {
     this.p2 = vec3.add([], this._p1, v);
   }
 
+  /**
+   * @param {object} options
+   * @param {vec4} options.p1
+   *        The first endpoint.
+   * @param {vec4} options.p2
+   *        The second endpoint.
+   */
   constructor(options) {
     super();
     this.p1 = options.p1;

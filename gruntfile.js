@@ -65,6 +65,7 @@ module.exports = function(grunt) {
 
         // Environments
         browser: true,
+        devel: true,
         mocha: true,
         node: false,
 

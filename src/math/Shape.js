@@ -4,6 +4,7 @@ import { AbstractError } from '../AbstractError';
 
 /**
  * Superclass for all 2D and 3D geometric shapes.
+ * @abstract
  * @memberof KraGL.math
  */
 class Shape {

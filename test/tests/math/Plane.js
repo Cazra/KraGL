@@ -10,15 +10,16 @@ describe('KraGL.math.Plane', function() {
         p: [2,3,4],
         n: [1,1,1]
       });
+
       assert.deepEqual(plane.p, [2,3,4,1]);
-      assert.deepEqual(plane.n, [1,1,1]);
+      assert.deepEqual(plane.n, vec3.normalize([], [1,1,1]));
     });
     it('default point', function() {
       var plane = new KraGL.math.Plane({
         n: [1,1,1]
       });
       assert.deepEqual(plane.p, [0,0,0,1]);
-      assert.deepEqual(plane.n, [1,1,1]);
+      assert.deepEqual(plane.n, vec3.normalize([], [1,1,1]));
     });
     it('default normal', function() {
       var plane = new KraGL.math.Plane({
@@ -44,21 +45,18 @@ describe('KraGL.math.Plane', function() {
   describe('normal', function() {
     it('get/set - normal', function() {
       var plane = new KraGL.math.Plane();
-      assert.deepEqual(plane.normal, [0,0,1]);
       assert.deepEqual(plane.n, [0,0,1]);
 
-      plane.normal = [2,3,4];
-      assert.deepEqual(plane.normal, [2,3,4]);
-      assert.deepEqual(plane.n, [2,3,4]);
+      plane.n = [2,3,4];
+      assert.deepEqual(plane.n, vec3.normalize([], [2,3,4]));
 
       plane.n = [1,1,1];
-      assert.deepEqual(plane.normal, [1,1,1]);
-      assert.deepEqual(plane.n, [1,1,1]);
+      assert.deepEqual(plane.n, vec3.normalize([], [1,1,1]));
     });
     it('bad case - normal set to [0,0,0]', function() {
       var plane = new KraGL.math.Plane();
-      assert.throws(function() {
-        plane.normal = [0,0,0];
+      assert.throws(() => {
+        plane.n = [0,0,0];
       });
     });
   });
@@ -66,15 +64,12 @@ describe('KraGL.math.Plane', function() {
   describe('point', function() {
     it('get/set', function() {
       var plane = new KraGL.math.Plane();
-      assert.deepEqual(plane.point, [0,0,0,1]);
       assert.deepEqual(plane.p, [0,0,0,1]);
 
-      plane.point = [1,1,1];
-      assert.deepEqual(plane.point, [1,1,1,1]);
+      plane.p = [1,1,1];
       assert.deepEqual(plane.p, [1,1,1,1]);
 
       plane.p = [2,3,4];
-      assert.deepEqual(plane.point, [2,3,4,1]);
       assert.deepEqual(plane.p, [2,3,4,1]);
     });
   });
@@ -134,13 +129,13 @@ describe('KraGL.math.Plane', function() {
     });
   });
 
-  describe('distanceTo', function() {
+  describe('dist', function() {
     it('point', function() {
       var plane = new KraGL.math.Plane({
         p: [1,1,1],
         n: [2,0,0]
       });
-      assert.approximately(plane.distanceTo([2,3,4,1]), 1, 0.0001);
+      assert.approximately(plane.dist([2,3,4,1]), 1, 0.0001);
 
       plane.n = [3,3,3];
       assert.approximately(plane.dist([2,2,2,1]), vec3.length([1,1,1]), 0.0001);
@@ -148,18 +143,6 @@ describe('KraGL.math.Plane', function() {
 
       plane.n = [0,1,0];
       assert.approximately(plane.dist([0,1,0,1]), 0, 0.0001);
-    });
-  });
-
-  describe('getPlane', function() {
-    it('normal case', function() {
-      var plane = new KraGL.math.Plane({
-        p: [1,1,1],
-        n: [0,1,0]
-      });
-
-      var result = plane.getPlane();
-      assert.isTrue(plane.approx(result));
     });
   });
 
@@ -391,7 +374,7 @@ describe('KraGL.math.Plane', function() {
         assert.isTrue(actual instanceof KraGL.math.Line);
 
         assert.isTrue(plane1.contains(actual.p1) && plane2.contains(actual.p1));
-        assert.vecApproximately(actual.vec, [0,0,1], 0.0001);
+        assert.vecApproximately(vec3.normalize([], actual.vec), [0,0,1], 0.0001);
       });
       it('no intersection', function() {
         var plane1 = new KraGL.math.Plane({
@@ -449,32 +432,6 @@ describe('KraGL.math.Plane', function() {
         p2: [2,3,0]
       });
       assert.isFalse(plane.intersects(line));
-    });
-  });
-
-  describe('isCoplanar', function() {
-    it('Plane', function() {
-      var plane = new KraGL.math.Plane({
-        p: [1,1,1],
-        n: [0,1,0]
-      });
-      var other = new KraGL.math.Plane({
-        p: [1,2,1],
-        n: [0,1,0]
-      });
-      assert.isFalse(plane.isCoplanar(other));
-
-      other = new KraGL.math.Plane({
-        p: [2,1,2],
-        n: [0,1,0]
-      });
-      assert.isTrue(plane.isCoplanar(other));
-
-      other = new KraGL.math.Plane({
-        p: [1,2,1],
-        n: [1,1,1]
-      });
-      assert.isFalse(plane.isCoplanar(other));
     });
   });
 
