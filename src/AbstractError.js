@@ -11,7 +11,7 @@ import { KraGLError } from './KraGLError';
  */
 class AbstractError extends KraGLError {
   constructor(msg) {
-    super(msg);
+    super(msg || 'Must be implemented by subclass.');
   }
 }
 export { AbstractError };

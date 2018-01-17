@@ -1,6 +1,7 @@
 'use strict';
 
 import { GLConstants } from './GLConstants';
+import { materials } from './materials';
 import { math } from './math';
 
 /**
@@ -28,6 +29,7 @@ window.KraGL = (() => {
     EPSILON,
     GLConstants,
     getVersion,
+    materials,
     math
   };
 })();
