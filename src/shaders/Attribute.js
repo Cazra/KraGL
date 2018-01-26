@@ -63,9 +63,18 @@ export class Attribute extends ShaderVar {
   }
 
   /**
+   * Gets the offset for this attribute in its currently bound vertex buffer.
+   * @type {uint}
+   */
+  get offset() {
+    return this._gl.getVertexAttribOffset(this._location,
+      GL_VERTEX_ATTRIB_ARRAY_POINTER);
+  }
+
+  /**
    * The number of bytes between successive elements for this attribute in
    * its currently bound vertex buffer.
-   * @type {int}
+   * @type {uint}
    */
   get stride() {
     return this._gl.getVertexAttrib(this._location,
@@ -96,7 +105,7 @@ export class Attribute extends ShaderVar {
    * Binds the attribute to the currently bound vertex buffer.
    * Stride and offset MUST be a multiple of the size for the attribute's
    * unit type. As long as all of the attributes in the vertex buffer use the
-   * same unit type (typically GL_FLOAT), this isn't much of an issue. 
+   * same unit type (typically GL_FLOAT), this isn't much of an issue.
    * @param {WebGL} gl
    * @param {uint} stride
    *        The number of bytes between successive vertices in the buffer.
@@ -107,5 +116,21 @@ export class Attribute extends ShaderVar {
   bind(gl, stride, offset) {
     gl.vertexAttribPointer(this._location, this.sizeUnits, this.unitType,
       false, stride, offset);
+  }
+
+  /**
+   * Disables the attribute from use in a vertex buffer.
+   * @param {WebGL} gl
+   */
+  disable(gl) {
+    gl.disableVertexAttribArray(this._location);
+  }
+
+  /**
+   * Enables the attribute for use in a vertex buffer.
+   * @param {WebGL} gl
+   */
+  enable(gl) {
+    gl.enableVertexAttribArray(this._location);
   }
 }

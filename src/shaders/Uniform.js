@@ -59,7 +59,7 @@ const UNI_SETTERS = {
 };
 
 /**
- * A shader variable whose value remains the same across many vertices.
+ * A shader variable whose value remains the same across all vertices.
  * @memberof KraGL.shaders
  */
 export class Uniform extends ShaderVar {

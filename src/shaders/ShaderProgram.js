@@ -30,6 +30,22 @@ import { Uniform } from './Uniform';
 class ShaderProgram {
 
   /**
+   * A map of the program's attribute variables, keyed by name.
+   * @type {map<string, KraGL.shaders.Attribute>}
+   */
+  get attributes() {
+    return this._attributes;
+  }
+
+  /**
+   * A map of the program's uniform variables, keyed by name.
+   * @type {map<string, KraGL.shaders.Uniform>}
+   */
+  get uniforms() {
+    return this._uniforms;
+  }
+
+  /**
    * Please do not directly use the constructor. Create ShaderProgram through
    * the static createProgram method instead.
    * @param {object} opts
@@ -37,7 +53,8 @@ class ShaderProgram {
    * @param {map<string, KraGL.shaders.Uniform>} opts.uniforms
    * @param {map<string, KraGL.shaders.Attribute>} opts.attributes
    */
-  constructor(opts) {
+  constructor(gl, opts) {
+    this._gl = gl;
     this._program = opts.program;
     this._uniforms = opts.uniforms;
     this._attributes = opts.attributes;
@@ -102,7 +119,7 @@ class ShaderProgram {
     let uniforms = ShaderProgram._analyzeUniforms(gl, program);
     let attributes = ShaderProgram._analyzeAttributes(gl, program);
 
-    return new ShaderProgram({ attributes, program, uniforms });
+    return new ShaderProgram(gl, { attributes, program, uniforms });
   }
 
   /**
@@ -217,6 +234,36 @@ class ShaderProgram {
         return src;
       });
     }));
+  }
+
+  /**
+   * Unloads the program's resources from WebGL.
+   * Once this is done, you will no longer be able to use this ShaderProgram.
+   * @param {WebGL} gl
+   */
+  clean(gl) {
+    gl.deleteProgram(this._program);
+  }
+
+  /**
+   * Disables this ShaderProgram and its variables.
+   * @param {WebGL} gl
+   */
+  disable(gl) {
+    _.each(this._attributes, attr => {
+      attr.disable(gl);
+    });
+  }
+
+  /**
+   * Enables this ShaderProgram and its variables.
+   * @param {WebGL} gl
+   */
+  enable(gl) {
+    _.each(this._attributes, attr => {
+      attr.enable(gl);
+    });
+    gl.useProgram(this._program);
   }
 }
 export { ShaderProgram };

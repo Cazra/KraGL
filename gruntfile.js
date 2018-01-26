@@ -131,6 +131,7 @@ module.exports = function(grunt) {
           GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING: false,
           GL_VERTEX_ATTRIB_ARRAY_ENABLED: false,
           GL_VERTEX_ATTRIB_ARRAY_NORMALIZED: false,
+          GL_VERTEX_ATTRIB_ARRAY_POINTER: false,
           GL_VERTEX_ATTRIB_ARRAY_SIZE: false,
           GL_VERTEX_ATTRIB_ARRAY_STRIDE: false,
           GL_VERTEX_ATTRIB_ARRAY_TYPE: false,
