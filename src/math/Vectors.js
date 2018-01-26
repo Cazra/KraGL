@@ -1,7 +1,5 @@
 'use strict';
 
-import { math } from './';
-
 /**
  * A collection of common vector math functions.
  * @memberof KraGL.math
@@ -21,7 +19,7 @@ class Vectors {
 
     return _.chain(_.range(u.length))
     .find(i => {
-      return !math.approx(u[i], v[i], tolerance);
+      return !KraGL.math.approx(u[i], v[i], tolerance);
     })
     .isUndefined()
     .value();
@@ -69,12 +67,12 @@ class Vectors {
    * @return {boolean}
    */
   static parallel(u, v, tolerance=KraGL.EPSILON) {
-    u = math.vec3(u);
-    v = math.vec3(v);
+    u = KraGL.math.toVec3(u);
+    v = KraGL.math.toVec3(v);
 
     let cross = vec3.cross([], u, v);
     let sin = vec3.length(cross);
-    return math.approx(sin, 0, tolerance);
+    return KraGL.math.approx(sin, 0, tolerance);
   }
 
   /**
@@ -147,7 +145,7 @@ class Vectors {
 
     let lenU = vec3.len(u);
     let lenV = vec3.len(v);
-    let length = math.mix(alpha, [lenU, lenV]);
+    let length = KraGL.math.mix(alpha, [lenU, lenV]);
 
     let q = quat.setAxisAngle([], nHat, theta);
     let slerpedHat = vec3.transformQuat([], uHat, q);

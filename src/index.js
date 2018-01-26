@@ -1,8 +1,11 @@
 'use strict';
 
 import { GLConstants } from './GLConstants';
-import { materials } from './materials';
-import { math } from './math';
+import * as io from './io';
+import * as materials from './materials';
+import * as math from './math';
+import * as shaders from './shaders';
+import * as util from './util';
 
 /**
  * The top-level KraGL namespace.
@@ -29,7 +32,10 @@ window.KraGL = (() => {
     EPSILON,
     GLConstants,
     getVersion,
+    io,
     materials,
-    math
+    math,
+    shaders,
+    util
   };
 })();
