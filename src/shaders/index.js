@@ -7,6 +7,7 @@
  */
 export * from './Attribute';
 export * from './ShaderError';
+export * from './ShaderLib';
 export * from './ShaderProgram';
 export * from './ShaderVar';
 export * from './Uniform';

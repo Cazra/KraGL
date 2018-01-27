@@ -239,31 +239,30 @@ class ShaderProgram {
   /**
    * Unloads the program's resources from WebGL.
    * Once this is done, you will no longer be able to use this ShaderProgram.
-   * @param {WebGL} gl
    */
-  clean(gl) {
-    gl.deleteProgram(this._program);
+  clean() {
+    this._gl.deleteProgram(this._program);
   }
 
   /**
-   * Disables this ShaderProgram and its variables.
-   * @param {WebGL} gl
+   * Disables this ShaderProgram and its variables. Please do not invoke this
+   * directly. Use ShaderLib.bind instead.
    */
-  disable(gl) {
+  disable() {
     _.each(this._attributes, attr => {
-      attr.disable(gl);
+      attr.disable();
     });
   }
 
   /**
-   * Enables this ShaderProgram and its variables.
-   * @param {WebGL} gl
+   * Enables this ShaderProgram and its variables. Please do not invoke this
+   * directly. Use ShaderLib.bind instead.
    */
-  enable(gl) {
+  enable() {
     _.each(this._attributes, attr => {
-      attr.enable(gl);
+      attr.enable();
     });
-    gl.useProgram(this._program);
+    this._gl.useProgram(this._program);
   }
 }
 export { ShaderProgram };

@@ -106,31 +106,28 @@ export class Attribute extends ShaderVar {
    * Stride and offset MUST be a multiple of the size for the attribute's
    * unit type. As long as all of the attributes in the vertex buffer use the
    * same unit type (typically GL_FLOAT), this isn't much of an issue.
-   * @param {WebGL} gl
    * @param {uint} stride
    *        The number of bytes between successive vertices in the buffer.
    * @param {uint} offset
    *        The byte offset of this attribute from the start of a vertex in
    *        the buffer.
    */
-  bind(gl, stride, offset) {
-    gl.vertexAttribPointer(this._location, this.sizeUnits, this.unitType,
+  bind(stride, offset) {
+    this._gl.vertexAttribPointer(this._location, this.sizeUnits, this.unitType,
       false, stride, offset);
   }
 
   /**
-   * Disables the attribute from use in a vertex buffer.
-   * @param {WebGL} gl
+   * Disables the attribute.
    */
-  disable(gl) {
-    gl.disableVertexAttribArray(this._location);
+  disable() {
+    this._gl.disableVertexAttribArray(this._location);
   }
 
   /**
    * Enables the attribute for use in a vertex buffer.
-   * @param {WebGL} gl
    */
-  enable(gl) {
-    gl.enableVertexAttribArray(this._location);
+  enable() {
+    this._gl.enableVertexAttribArray(this._location);
   }
 }
