@@ -45,14 +45,6 @@ export class ShaderVar {
   }
 
   /**
-   * The program this is bound to.
-   * @type {WebGLProgram}
-   */
-  get program() {
-    return this._program;
-  }
-
-  /**
    * The size of the variable in bytes.
    * @type {unit}
    */

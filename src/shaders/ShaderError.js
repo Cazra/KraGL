@@ -11,6 +11,7 @@ import { KraGLError } from '../KraGLError';
 class ShaderError extends KraGLError {
   constructor(msg) {
     super(msg);
+    this._isShaderError = true;
   }
 }
 export { ShaderError };

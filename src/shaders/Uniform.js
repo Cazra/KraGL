@@ -77,9 +77,11 @@ export class Uniform extends ShaderVar {
    * @type {(number|number[])}
    */
   get value() {
-    return this._gl.getUniform(this.program, this.location);
+    return this._gl.getUniform(this._program, this.location);
   }
   set value(v) {
+    if(!_.isArray(v))
+      v = [v];
     let setter = UNI_SETTERS[this.type];
     setter(this._gl, this._location, v);
   }

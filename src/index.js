@@ -1,6 +1,7 @@
 'use strict';
 
 import { GLConstants } from './GLConstants';
+import { KraGLError } from './KraGLError';
 import * as io from './io';
 import * as materials from './materials';
 import * as math from './math';
@@ -31,6 +32,7 @@ window.KraGL = (() => {
   return {
     EPSILON,
     GLConstants,
+    KraGLError,
     getVersion,
     io,
     materials,

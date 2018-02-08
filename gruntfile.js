@@ -12,7 +12,15 @@ module.exports = function(grunt) {
         dest: 'temp/KraGL.browserify.js',
         options: {
           browserifyOptions: { debug: true },
-          transform: [['babelify', {'presets': ['es2015']}]]
+          transform: [['babelify', {
+              'presets': ['es2015'],
+              'plugins': [
+                ["babel-plugin-transform-builtin-extend", {
+                    globals: ["Error"]
+                }]
+              ]
+            }
+          ]]
         }
       }
     },

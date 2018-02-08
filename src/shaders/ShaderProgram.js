@@ -152,17 +152,21 @@ class ShaderProgram {
   }
 
   /**
+   * @typedef {object} CreateProgramOpts
+   * @property {ShaderOpts} opts.frag
+   *        Options for loading and compiling the fragment shader.
+   * @property {ShaderOpts} opts.vert
+   *        Options for loading and compiling the vertex shader.
+   */
+
+  /**
    * Creates a ShaderProgram and loads its resources into the WebGL context.
    * @param {WebGL} gl
-   * @param {object} opts
-   * @param {ShaderOpts} opts.frag
-   *        Options for loading and compiling the fragment shader.
-   * @param {ShaderOpts} opts.vert
-   *        Options for loading and compiling the vertex shader.
+   * @param {CreateProgramOpts} opts
    * @return {Promise<ShaderProgram>}
    */
   static createProgram(gl, opts) {
-    return ShaderProgram._loadSourceCode(opts.vert, opts.frag)
+    return ShaderProgram._loadSourceCode(gl, opts.vert, opts.frag)
     .then(sources => {
       let [vertSrc, fragSrc] = sources;
       return ShaderProgram._build(gl, vertSrc, fragSrc);
@@ -185,7 +189,7 @@ class ShaderProgram {
     gl.validateProgram(program);
 
     // Check for errors.
-    if(!gl.getProgramParameter(GL_LINK_STATUS)) {
+    if(!gl.getProgramParameter(program, GL_LINK_STATUS)) {
       let msg = gl.getProgramInfoLog(program);
       throw new ShaderError(`Failed to link shader program. Reason: ${msg}`);
     }
@@ -196,6 +200,7 @@ class ShaderProgram {
   /**
    * Loads the vertex and fragment shaders' GLSL source code from their URLs.
    * @private
+   * @param {WebGL} gl
    * @param {ShaderOpts} vertOpts
    *        Options for loading and compiling the vertex shader.
    * @param {ShaderOpts} fragOpts

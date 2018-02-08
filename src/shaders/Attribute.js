@@ -46,7 +46,7 @@ export class Attribute extends ShaderVar {
 
   /**
    * Whether this attribute becomes normalized when converted to floating
-   * point values.
+   * point values in the currently bound buffer.
    * @type {boolean}
    */
   get isNormalized() {

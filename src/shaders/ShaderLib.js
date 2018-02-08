@@ -1,6 +1,7 @@
 'use strict';
 
 import { ShaderError } from './ShaderError';
+import { ShaderProgram } from './ShaderProgram';
 
 /**
  * Provides a managed collection of ShaderPrograms identified by name.
@@ -20,8 +21,26 @@ export class ShaderLib {
    * The name of the currently bound ShaderProgram.
    * @type {string}
    */
-  get curProgramName() {
+  get curName() {
     return this._curName;
+  }
+
+  /**
+   * A list of the names of programs in this library, sorted alphanumerically.
+   * @type {string[]}
+   */
+  get names() {
+    let names = _.keys(this._programs);
+    names.sort();
+    return names;
+  }
+
+  /**
+   * Gets the count of ShaderPrograms in this library.
+   * @type {uint}
+   */
+  get size() {
+    return _.size(this._programs);
   }
 
   /**
@@ -47,25 +66,6 @@ export class ShaderLib {
   }
 
   /**
-   * Sets a ShaderProgram in this collection to be used by the WebGL context.
-   * @param {string} name
-   * @return {KraGL.shaders.ShaderProgram}
-   */
-  bind(name) {
-    let program = this._programs[name];
-    if(!program)
-      throw new ShaderError(`The program ${name} doesn't exist.`);
-
-    if(this._curProgram)
-      this._curProgram.disable();
-    this._curProgram = program;
-    this._curName = name;
-    program.enable();
-
-    return program;
-  }
-
-  /**
    * Clears out the collection and unloads all the resources for its
    * ShaderPrograms.
    */
@@ -80,11 +80,66 @@ export class ShaderLib {
   }
 
   /**
+   * Creates and names a set of ShaderPrograms for this library.
+   * @param {WebGL} gl
+   * @param {map<string, CreateProgramOpts>} optsMap
+   * @return {Promise<ShaderLib>} Returns this for chaining.
+   */
+  createPrograms(optsMap) {
+    let names = _.keys(optsMap);
+    return Promise.all(_.map(names, name => {
+      let opts = optsMap[name];
+      return ShaderProgram.createProgram(this._gl, opts)
+      .then(program => {
+        this.add(name, program);
+      });
+    }));
+  }
+
+  /**
+   * Sets a ShaderProgram in this collection to be used by the WebGL context.
+   * Only one ShaderProgram is ever enabled at a time.
+   * @param {string} name
+   * @return {KraGL.shaders.ShaderProgram}
+   */
+  enable(name) {
+    let program = this._programs[name];
+    if(!program)
+      throw new ShaderError(`The program ${name} doesn't exist.`);
+
+    if(this._curProgram)
+      this._curProgram.disable();
+    this._curProgram = program;
+    this._curName = name;
+    program.enable();
+
+    return program;
+  }
+
+  /**
+   * Gets the program with the specified name.
+   * @param {string} name
+   * @return {KraGL.shaders.ShaderProgram}
+   */
+  get(name) {
+    return this._programs[name];
+  }
+
+  /**
+   * Checks if this library contains a particular program.
+   * @param {string} name
+   * @return {boolean}
+   */
+  has(name) {
+    return !!this._programs[name];
+  }
+
+  /**
    * Pops the ShaderProgram ontop of the stack and binds it.
    */
   pop() {
     let name = this._programStack.pop();
-    this.bind(name);
+    this.enable(name);
   }
 
   /**

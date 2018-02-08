@@ -11,7 +11,7 @@
  * @param {uint} millis
  * @return {Promise}
  */
-export function wait(millis) {
+export function wait(millis=0) {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve();
