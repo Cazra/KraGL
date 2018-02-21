@@ -8,6 +8,8 @@ import { Material } from './Material';
  * but internally they are represented as a vec4 in normalized RGBA format.
  * This means that each RGBA component of the color is a float in the range
  * [0, 1].
+ * @memberof KraGL.materials
+ * @implements {Cloneable}
  */
 class Color extends Material {
 
@@ -342,6 +344,16 @@ class Color extends Material {
     // Cleaning a color is trivial.
     _.noop(gl);
     return Promise.resolve();
+  }
+
+  /**
+   * Produces a cloned copy of this color.
+   * @return {KraGL.materials.Color}
+   */
+  clone() {
+    return new Color({
+      rgba: _.clone(this.rgba)
+    });
   }
 
   /**
