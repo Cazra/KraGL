@@ -1,14 +1,14 @@
 # KraGL
 
-An ECMAScript 6 WebGL game engine. This engine is the spiritual successor to
+KraGL is an ES-Next WebGL game engine library. It is designed to make implementing
+2D and 3D browser-based games easy and fun, with a simple, well-documented interface
+and lots of examples.
+
+Currently, this project is still under development and is not yet ready to
+be used in real applications.
+
+This project is the spiritual successor to
 [TentaGL](https://github.com/Cazra/TentaGL)
-
-The project is primarily tested in Windows with Chrome, but I will try to
-support all browsers that implement ECMAScript 6 for their Javascript.
-
-The mission of this engine is to make it easy to create browser-based 2D or 3D
-games, take advantage of the resources provided in ECMAScript 6, and provide
-superb documentation for its API.
 
 ## Dependencies
 
@@ -37,45 +37,33 @@ KragL uses JSDoc for to annotate the source code and generate documentation
 web pages. The rendered documentation web pages are put in the docs/html
 directory.
 
-## building
+## Building KraGL
 
-To build the distributable for the KraGL game engine library, run
+To build the distributable for the KraGL game engine library, run ```grunt```
+from a terminal at the project's root. As part of the process of building
+the distributable, the project will be linted, concatenated, and minified.
 
-```
-grunt
-```
+This process will create the concatenated KraGL library file ```bin/KraGL.cat.js```
+and the minified library file ```bin/KraGL.min.js```. Additionally, documentation
+for the library will be generated in ```doc/```.
 
-from the terminal at the project's root. As part of the process of building
-the distributable, the project will be linted, unit tested, and minified.
+## Unit Tests
 
-## testing
+The Mocha unit tests for this project are browser-based. To run the tests,
+first build KraGL if you haven't already. Then run a simple http server at the
+project's root directory, and navigate to ```localhost:{PORT}/tests/index.html```
+in your browser.
 
-To run the Mocha unit tests for the library, run
+The project is primarily tested in Windows with Chrome, but I will try to
+support all ES-Next-compliant browsers.
 
-```
-grunt test
-```
-
-from the terminal at the project's root. Mocha will show how many tests
-passed, how many failed (any details about why the tests failed), and
-any tests that are pending implementation.
-
-All unit tests are located in the /test directory.
-
-## Generating documentation
-
-To generate the documentation HTML pages for the project, run
-
-```
-grunt docs
-```
-
-from the terminal at the project's root. The rendered web pages will be placed
-in /docs/html.
-
-## Viewing examples
+## Example Applications
 
 The /examples directory contains web page examples of KraGL in action.
+
+Before viewing an example application, you must build it by running ```grunt``` in the
+example's root directory.
+
 To allow cross-origin resource sharing to work to properly load the examples'
 resources, run a simple http server in the project's directory. With the
 simple HTTP server running, then just navigate to the examples in your
