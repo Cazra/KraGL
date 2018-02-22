@@ -69,6 +69,26 @@ class Color extends Material {
   }
 
   /**
+   * The color expressed as a 32-bit unsigned integer in ARGB format.
+   * @type {uint32}
+   */
+  get hex() {
+    let bytes = this.rgbaBytes;
+    let hex = bytes[3] << 24;
+    hex += bytes[0] << 16;
+    hex += bytes[1] << 8;
+    hex += bytes[2] << 0;
+    return hex>>>0;
+  }
+  set hex(hex) {
+    let a = (hex & 0xFF000000) >>> 24;
+    let r = (hex & 0x00FF0000) >>> 16;
+    let g = (hex & 0x0000FF00) >>> 8;
+    let b = (hex & 0x000000FF);
+    this.rgbaBytes = [r, g, b, a];
+  }
+
+  /**
    * The color expressed in normalized HSBA (Hue, Saturation, Brightness)
    * format. Alpha is assumed to be 1.
    * See https://en.wikipedia.org/wiki/HSL_and_HSV
@@ -102,7 +122,7 @@ class Color extends Material {
         hue = ((g-b)/chroma + 6) % 6;
       else if(max === g)
         hue = (b-r)/chroma + 2;
-      else if(max === r)
+      else if(max === b)
         hue = (r-g)/chroma + 4;
       hue /= 6;
     }
@@ -167,7 +187,7 @@ class Color extends Material {
         hue = ((g-b)/chroma + 6) % 6;
       else if(max === g)
         hue = (b-r)/chroma + 2;
-      else if(max === r)
+      else if(max === b)
         hue = (r-g)/chroma + 4;
       hue /= 6;
     }
@@ -196,26 +216,6 @@ class Color extends Material {
     else if(hp >= 5 && hp < 6)
       [r, g, b] = [c, 0, x];
     this.rgba = [r + m, g + m, b + m, a];
-  }
-
-  /**
-   * The color expressed as a 32-bit unsigned integer in ARGB format.
-   * @type {uint32}
-   */
-  get hex() {
-    let bytes = this.rgbaBytes;
-    let hex = bytes[3] << 24;
-    hex += bytes[0] << 16;
-    hex += bytes[1] << 8;
-    hex += bytes[2] << 0;
-    return hex>>>0;
-  }
-  set hex(hex) {
-    let a = (hex & 0xFF000000) >>> 24;
-    let r = (hex & 0x00FF0000) >>> 16;
-    let g = (hex & 0x0000FF00) >>> 8;
-    let b = (hex & 0x000000FF);
-    this.rgbaBytes = [r, g, b, a];
   }
 
   /**
