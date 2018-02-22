@@ -188,5 +188,5 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-string-replace');
 
   // Grunt task(s).
-  grunt.registerTask('default', ['jshint', 'browserify', 'concat', 'string-replace', 'jsdoc']);
+  grunt.registerTask('default', ['jshint', 'browserify', 'concat', 'string-replace', 'jsdoc', 'uglify']);
 };
