@@ -5,9 +5,8 @@
  * @memberof KraGL
  * @extends Error
  */
-class KraGLError extends Error {
+export class KraGLError extends Error {
   constructor(msg) {
     super(msg);
   }
 }
-export { KraGLError };

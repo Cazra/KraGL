@@ -81,7 +81,6 @@ export class ShaderLib {
 
   /**
    * Creates and names a set of ShaderPrograms for this library.
-   * @param {WebGL} gl
    * @param {map<string, CreateProgramOpts>} optsMap
    * @return {Promise<ShaderLib>} Returns this for chaining.
    */
