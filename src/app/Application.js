@@ -3,6 +3,7 @@
 import { AbstractError } from '../AbstractError';
 import { KraGLError } from '../KraGLError';
 import { ShaderLib } from '../shaders';
+import { FPSCounter } from './FPSCounter';
 
 const NOT_STARTED = 0;
 const RUNNING = 1;
@@ -36,6 +37,14 @@ export class Application {
    */
   get container() {
     return this._container;
+  }
+
+  /**
+   * The application's current frame rate.
+   * @type {number}
+   */
+  get fps() {
+    return this._fpsCounter.fps;
   }
 
   /**
@@ -145,6 +154,8 @@ export class Application {
 
     // Create a ShaderLib for this application.
     this._shaderLib = new ShaderLib(this._gl);
+
+    this._fpsCounter = new FPSCounter();
 
     this._state = NOT_STARTED;
   }
@@ -287,6 +298,7 @@ export class Application {
       this._run();
     });
     this._state = RUNNING;
+    this._fpsCounter.tick();
 
     this.update();
     this.render();

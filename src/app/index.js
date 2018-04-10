@@ -7,5 +7,6 @@
  * @memberof KraGL
  */
 export * from './Application';
+export * from './FPSCounter';
 export * from './Scene';
 export * from './SceneManager';

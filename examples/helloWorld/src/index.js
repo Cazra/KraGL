@@ -55,6 +55,7 @@ class ExampleApp extends KraGL.app.Application {
    */
   update() {
     // TODO
+    console.log(this.fps.toFixed(1));
   }
 }
 
