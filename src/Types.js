@@ -4,7 +4,7 @@ import { GLConstants as GL } from './GLConstants';
 
 /**
  * Shorthand name for the WebGLRenderingContext.
- * @typedef {WebGLRenderingContext} WebGL
+ * @typedef {(WebGLRenderingContext|WebGL2RenderingContext)} WebGL
  */
 
 // Type meta-data declarations

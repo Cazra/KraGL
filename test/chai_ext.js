@@ -2,6 +2,23 @@
 
 _.extend(chai.assert, {
   /**
+   * Passes if a Promise has been rejected.
+   * @param {Promise} promise
+   * @return {Promise}
+   */
+  isRejected: function(promise) {
+    let bad = new Error('Expected promise to be rejected.');
+    return promise
+    .then(() => {
+      throw bad;
+    })
+    .catch(err => {
+      if(err === bad)
+        throw bad;
+    });
+  },
+
+  /**
    * Checks if the corresponding components of two vectors are approximately
    * equal to each other.
    * @param  {(vec2|vec3|vec4)} u
@@ -27,6 +44,25 @@ _.extend(chai.assert, {
       }
     });
   }
+});
+
+describe('chai.assert.isRejected', () => {
+  it('pass', () => {
+    let promise = Promise.reject(new Error('Hello. I am Error.'));
+    return chai.assert.isRejected(promise);
+  });
+  it('fail', () => {
+    let promise = Promise.resolve();
+    let passed = false;
+
+    return chai.assert.isRejected(promise)
+    .catch(() => {
+      passed = true;
+    })
+    .then(() => {
+      chai.assert.isTrue(passed);
+    });
+  });
 });
 
 

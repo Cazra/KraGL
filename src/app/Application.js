@@ -148,7 +148,11 @@ export class Application {
 
     let glAttrs = opts.glAttrs || {};
     glAttrs.alpha = glAttrs.alpha || false;
-    glAttrs.stencil = true;
+
+    // Enable stencil buffer by default. There's a lot of cool stuff we can do
+    // with stencils!
+    if(glAttrs.stencil === undefined)
+      glAttrs.stencil = true;
 
     this._gl = this._canvas.getContext(contextType, glAttrs);
 
@@ -177,8 +181,11 @@ export class Application {
    */
   end() {
     cancelAnimationFrame(this._nextFrame);
-    this._nextFrame = requestAnimationFrame(() => {
-      this._state = ENDED;
+    return new Promise(resolve => {
+      this._nextFrame = requestAnimationFrame(() => {
+        this._state = ENDED;
+        resolve();
+      });
     });
   }
 
@@ -239,14 +246,18 @@ export class Application {
    * Hard-pauses the application. While the applicataion is hard-paused, it
    * won't perform any update or render frames.
    * The application can be unpaused by calling app.resume().
+   * @return {Promise}
    */
   pause() {
     cancelAnimationFrame(this._nextFrame);
-    this._nextFrame = requestAnimationFrame(() => {
-      this._state = PAUSED;
-    });
+    return new Promise(resolve => {
+      this._nextFrame = requestAnimationFrame(() => {
+        this._state = PAUSED;
 
-    // TODO: pause music/sound
+        // TODO: pause music/sound
+        resolve();
+      });
+    });
   }
 
   /**
@@ -260,33 +271,45 @@ export class Application {
 
   /**
    * Restarts the application after the current frame.
+   * @return {Promise}
    */
   restart() {
     cancelAnimationFrame(this._nextFrame);
-    this._nextFrame = requestAnimationFrame(() => {
-      this._state = LOADING;
+    return new Promise((resolve, reject) => {
+      this._nextFrame = requestAnimationFrame(() => {
+        this._state = LOADING;
 
-      // Clean and reload the app's state and resources.
-      this.clean()
-      .then(() => {
-        return Promise.all([
-          this.initResources(),
-          this.initWebGLResources()
-        ]);
-      })
-      .then(() => {
-        this._run();
+        // Clean and reload the app's state and resources.
+        this.clean()
+        .then(() => {
+          return Promise.all([
+            this.initResources(),
+            this.initWebGLResources()
+          ]);
+        })
+        .then(() => {
+          this._run();
+          resolve();
+        })
+        .catch(err => {
+          reject(err);
+        });
       });
     });
+
   }
 
   /**
    * Resumes the application after it has been paused.
+   * @return {Promise}
    */
   resume() {
     cancelAnimationFrame(this._nextFrame);
-    this._nextFrame = requestAnimationFrame(() => {
-      this._run();
+    return new Promise(resolve => {
+      this._nextFrame = requestAnimationFrame(() => {
+        this._run();
+        resolve();
+      });
     });
   }
 
@@ -307,11 +330,12 @@ export class Application {
   /**
    * Initializes the application and starts its update/render animation loop.
    * This should only ever be called once in the application's life cycle.
+   * @return {Promise}
    */
   start() {
     if(this._state === NOT_STARTED) {
       this._initContextLossHandlers();
-      this.restart();
+      return this.restart();
     }
     else
       throw new KraGLError('Cannot start the application instance ' +
