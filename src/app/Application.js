@@ -64,6 +64,15 @@ export class Application {
   }
 
   /**
+   * Whether the application has lost its WebGL context and is trying
+   * to restore it.
+   * @type {boolean}
+   */
+  get isContextLost() {
+    return this._state === CONTEXT_LOST;
+  }
+
+  /**
    * Whether the application is busy loading its resources.
    * @type {boolean}
    */
@@ -249,6 +258,10 @@ export class Application {
    * @return {Promise}
    */
   pause() {
+    if(this._state !== RUNNING)
+      throw new KraGLError('The application can only be paused while ' +
+        'it is running.');
+
     cancelAnimationFrame(this._nextFrame);
     return new Promise(resolve => {
       this._nextFrame = requestAnimationFrame(() => {
@@ -304,6 +317,10 @@ export class Application {
    * @return {Promise}
    */
   resume() {
+    if(this._state !== PAUSED)
+      throw new KraGLError('The application can only be resumed if ' +
+        'it is paused.');
+
     cancelAnimationFrame(this._nextFrame);
     return new Promise(resolve => {
       this._nextFrame = requestAnimationFrame(() => {
