@@ -8,12 +8,20 @@ import { Scene } from './Scene';
  * @private
  */
 class _EmptyScene extends Scene {
-  constructor(app) {
-    super(app);
+  constructor() {
+    super(undefined);
   }
-  clean() {}
-  initResources() {}
-  initWebGLResources() {}
+  clean() {
+    return Promise.resolve();
+  }
+  _initContextLossHandlers() {}
+  initResources() {
+    return Promise.resolve();
+  }
+  initWebGLResources() {
+    return Promise.resolve();
+  }
+  _removeContextLossHandlers() {}
   render() {}
   update() {}
 }
@@ -24,14 +32,6 @@ class _EmptyScene extends Scene {
 export class SceneManager {
 
   /**
-   * Reference to the parent application.
-   * @type {KraGL.app.Application}
-   */
-  get app() {
-    return this._app;
-  }
-
-  /**
    * The currently loaded scene.
    * @type {KraGL.app.Scene}
    */
@@ -40,14 +40,18 @@ export class SceneManager {
   }
 
   /**
-   * @param {KraGL.app.Application} app
-   * @param {KraGL.app.Scene} [initialScene]
-   *        If specified, the SceneManager will initially be loaded with this
-   *        scene.
+   * Whether a scene is not currently loaded.
+   * @type {boolean}
    */
-  constructor(app, initialScene) {
-    this._app = app;
-    this.load(initialScene);
+  get isEmpty() {
+    return (this.curScene instanceof _EmptyScene);
+  }
+
+  /**
+   * Constructor for an initially empty SceneManager.
+   */
+  constructor() {
+    this._curScene = new _EmptyScene();
   }
 
   /**
@@ -60,14 +64,14 @@ export class SceneManager {
   load(newScene) {
     // If no scene is given, use a placeholder scene with no behavior.
     if(!newScene)
-      newScene = new _EmptyScene(this.app);
+      newScene = new _EmptyScene();
 
     // Swap out the scenes.
     let oldScene = this._curScene;
     this._curScene = newScene;
 
     // Unload the old scene.
-    this._loadPromise = (this._loadPromise || Promise.resolve())
+    return Promise.resolve()
     .then(() => {
       if(oldScene && oldScene.isLoaded)
         return oldScene.unload();
@@ -78,6 +82,13 @@ export class SceneManager {
       if(newScene && !newScene.isLoaded)
         return newScene.load();
     });
-    return this._loadPromise;
+  }
+
+  /**
+   * Unloads the current scene.
+   * @return {Promise}
+   */
+  unload() {
+    return this.load(undefined);
   }
 }
