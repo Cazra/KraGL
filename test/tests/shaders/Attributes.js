@@ -4,19 +4,28 @@ describe('KraGL.shaders.Attributes', () => {
   const assert = chai.assert;
   const ShaderProgram = KraGL.shaders.ShaderProgram;
 
+  const SIMPLE_OPTS = {
+    shaders: {
+      frag: {
+        urls: ['../shaders/old/simple.frag']
+      },
+      vert: {
+        urls: ['../shaders/old/simple.vert']
+      }
+    },
+    attributeGetters: {
+      vertexNormal: 'n',
+      vertexPos: 'xyz',
+      vertexTexCoords: 'texST'
+    }
+  };
+
   describe('unbound properties', () => {
     it('simple shader', () => {
       let canvas = document.createElement('canvas');
       let gl = canvas.getContext('webgl');
 
-      return ShaderProgram.createProgram(gl, {
-        vert: {
-          urls: ['../shaders/old/simple.vert']
-        },
-        frag: {
-          urls: ['../shaders/old/simple.frag']
-        }
-      })
+      return ShaderProgram.createProgram(gl, SIMPLE_OPTS)
       .then(program => {
         let attr = program.attributes['vertexNormal'];
         assert.isFalse(attr.isArray);
@@ -33,6 +42,8 @@ describe('KraGL.shaders.Attributes', () => {
         assert.equal(attr.type, GL_FLOAT_VEC3);
         assert.equal(attr.unitType, GL_FLOAT);
 
+        assert.equal(attr.getterName, 'n');
+
         program.clean();
       });
     });
@@ -43,14 +54,7 @@ describe('KraGL.shaders.Attributes', () => {
       let canvas = document.createElement('canvas');
       let gl = canvas.getContext('webgl');
 
-      return ShaderProgram.createProgram(gl, {
-        vert: {
-          urls: ['../shaders/old/simple.vert']
-        },
-        frag: {
-          urls: ['../shaders/old/simple.frag']
-        }
-      })
+      return ShaderProgram.createProgram(gl, SIMPLE_OPTS)
       .then(program => {
         let attr = program.attributes['vertexNormal'];
         assert.isFalse(attr.isEnabled);
@@ -69,14 +73,7 @@ describe('KraGL.shaders.Attributes', () => {
       let canvas = document.createElement('canvas');
       let gl = canvas.getContext('webgl');
 
-      return ShaderProgram.createProgram(gl, {
-        vert: {
-          urls: ['../shaders/old/simple.vert']
-        },
-        frag: {
-          urls: ['../shaders/old/simple.frag']
-        }
-      })
+      return ShaderProgram.createProgram(gl, SIMPLE_OPTS)
       .then(program => {
         let vertNorm = program.attributes['vertexNormal'];
         let vertPos = program.attributes['vertexPos'];

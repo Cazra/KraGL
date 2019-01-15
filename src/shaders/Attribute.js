@@ -36,6 +36,14 @@ export class Attribute extends ShaderVar {
   }
 
   /**
+   * The name of the Vertex getter property for this attribute.
+   * @type {string}
+   */
+  get getterName() {
+    return this._getterName;
+  }
+
+  /**
    * Whether this attribute is currently enabled.
    * @type {boolean}
    */
@@ -90,15 +98,18 @@ export class Attribute extends ShaderVar {
   }
 
   /**
+   * @protected
    * @param {WebGL} gl
    * @param {WebGLProgram} program
    * @param {WebGLActiveInfo} info
+   * @param {string} getterName
    */
-  constructor(gl, program, info) {
+  constructor(gl, program, info, getterName) {
     super(program, info);
 
     this._gl = gl;
     this._location = gl.getAttribLocation(program, info.name);
+    this._getterName = getterName;
   }
 
   /**

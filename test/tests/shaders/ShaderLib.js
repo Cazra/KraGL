@@ -1,9 +1,54 @@
 'use strict';
 
-describe('KraGL.shaders.ShaderProgram', () => {
+describe('KraGL.shaders.ShaderLib', () => {
   const assert = chai.assert;
   const ShaderProgram = KraGL.shaders.ShaderProgram;
   const ShaderLib = KraGL.shaders.ShaderLib;
+
+  const SIMPLE_OPTS = {
+    shaders: {
+      frag: {
+        urls: ['../shaders/old/simple.frag']
+      },
+      vert: {
+        urls: ['../shaders/old/simple.vert']
+      }
+    },
+    attributeGetters: {
+      vertexNormal: 'n',
+      vertexPos: 'xyz',
+      vertexTexCoords: 'texST'
+    }
+  };
+
+  const NORMAL_OPTS = {
+    shaders: {
+      frag: {
+        urls: ['../shaders/old/normal.frag']
+      },
+      vert: {
+        urls: ['../shaders/old/normal.vert']
+      }
+    },
+    attributeGetters: {
+      vertexNormal: 'n',
+      vertexPos: 'xyz',
+      vertexTexCoords: 'texST'
+    }
+  };
+
+  const PHONG_OPTS = {
+    shaders: {
+      vert: { urls: ['../shaders/old/phong.vert'] },
+      frag: { urls: ['../shaders/old/phong.frag'] },
+    },
+    attributeGetters: {
+      vertexNormal: 'n',
+      vertexPos: 'xyz',
+      vertexTang: 't',
+      vertexTexCoords: 'texST'
+    }
+  };
 
   describe('add, has, get, clean', () => {
     it('normal', () => {
@@ -14,14 +59,8 @@ describe('KraGL.shaders.ShaderProgram', () => {
       assert.isFalse(shaderLib.has('simple'));
 
       return Promise.all([
-        ShaderProgram.createProgram(gl, {
-          vert: { urls: ['../shaders/old/simple.vert'] },
-          frag: { urls: ['../shaders/old/simple.frag'] }
-        }),
-        ShaderProgram.createProgram(gl, {
-          vert: { urls: ['../shaders/old/normal.vert'] },
-          frag: { urls: ['../shaders/old/normal.frag'] }
-        })
+        ShaderProgram.createProgram(gl, SIMPLE_OPTS),
+        ShaderProgram.createProgram(gl, NORMAL_OPTS)
       ])
       .then(programs => {
         shaderLib.add('simple', programs[0]);
@@ -47,14 +86,8 @@ describe('KraGL.shaders.ShaderProgram', () => {
       let shaderLib = new ShaderLib(gl);
 
       return Promise.all([
-        ShaderProgram.createProgram(gl, {
-          vert: { urls: ['../shaders/old/simple.vert'] },
-          frag: { urls: ['../shaders/old/simple.frag'] }
-        }),
-        ShaderProgram.createProgram(gl, {
-          vert: { urls: ['../shaders/old/normal.vert'] },
-          frag: { urls: ['../shaders/old/normal.frag'] }
-        })
+        ShaderProgram.createProgram(gl, SIMPLE_OPTS),
+        ShaderProgram.createProgram(gl, NORMAL_OPTS)
       ])
       .then(programs => {
         assert.throws(() => {
@@ -75,14 +108,8 @@ describe('KraGL.shaders.ShaderProgram', () => {
 
       let shaderLib = new ShaderLib(gl);
       return shaderLib.createPrograms({
-        'simple': {
-          vert: { urls: ['../shaders/old/simple.vert'] },
-          frag: { urls: ['../shaders/old/simple.frag'] }
-        },
-        'normal': {
-          vert: { urls: ['../shaders/old/normal.vert'] },
-          frag: { urls: ['../shaders/old/normal.frag'] }
-        }
+        'simple': SIMPLE_OPTS,
+        'normal': NORMAL_OPTS
       })
       .then(() => {
         assert.isTrue(shaderLib.has('simple'));
@@ -102,14 +129,8 @@ describe('KraGL.shaders.ShaderProgram', () => {
 
       let shaderLib = new ShaderLib(gl);
       return shaderLib.createPrograms({
-        'simple': {
-          vert: { urls: ['../shaders/old/simple.vert'] },
-          frag: { urls: ['../shaders/old/simple.frag'] }
-        },
-        'normal': {
-          vert: { urls: ['../shaders/old/normal.vert'] },
-          frag: { urls: ['../shaders/old/normal.frag'] }
-        }
+        'simple': SIMPLE_OPTS,
+        'normal': NORMAL_OPTS
       })
       .then(() => {
         _.each(shaderLib.get('simple').attributes, attr => {
@@ -143,18 +164,9 @@ describe('KraGL.shaders.ShaderProgram', () => {
 
       let shaderLib = new ShaderLib(gl);
       return shaderLib.createPrograms({
-        'simple': {
-          vert: { urls: ['../shaders/old/simple.vert'] },
-          frag: { urls: ['../shaders/old/simple.frag'] }
-        },
-        'normal': {
-          vert: { urls: ['../shaders/old/normal.vert'] },
-          frag: { urls: ['../shaders/old/normal.frag'] }
-        },
-        'phong': {
-          vert: { urls: ['../shaders/old/phong.vert'] },
-          frag: { urls: ['../shaders/old/phong.frag'] }
-        }
+        'simple': SIMPLE_OPTS,
+        'normal': NORMAL_OPTS,
+        'phong': PHONG_OPTS
       })
       .then(() => {
         shaderLib.enable('simple');
@@ -184,14 +196,8 @@ describe('KraGL.shaders.ShaderProgram', () => {
 
       let shaderLib = new ShaderLib(gl);
       return shaderLib.createPrograms({
-        'simple': {
-          vert: { urls: ['../shaders/old/simple.vert'] },
-          frag: { urls: ['../shaders/old/simple.frag'] }
-        },
-        'normal': {
-          vert: { urls: ['../shaders/old/normal.vert'] },
-          frag: { urls: ['../shaders/old/normal.frag'] }
-        }
+        'simple': SIMPLE_OPTS,
+        'normal': NORMAL_OPTS
       })
       .then(() => {
         assert.isTrue(shaderLib.has('normal'));

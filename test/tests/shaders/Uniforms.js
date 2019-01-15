@@ -4,19 +4,28 @@ describe('KraGL.shaders.Uniforms', () => {
   const assert = chai.assert;
   const ShaderProgram = KraGL.shaders.ShaderProgram;
 
+  const SIMPLE_OPTS = {
+    shaders: {
+      frag: {
+        urls: ['../shaders/old/simple.frag']
+      },
+      vert: {
+        urls: ['../shaders/old/simple.vert']
+      }
+    },
+    attributeGetters: {
+      vertexNormal: 'n',
+      vertexPos: 'xyz',
+      vertexTexCoords: 'texST'
+    }
+  };
+
   describe('ShaderVar properties', () => {
     it('simple shader', () => {
       let canvas = document.createElement('canvas');
       let gl = canvas.getContext('webgl');
 
-      return ShaderProgram.createProgram(gl, {
-        vert: {
-          urls: ['../shaders/old/simple.vert']
-        },
-        frag: {
-          urls: ['../shaders/old/simple.frag']
-        }
-      })
+      return ShaderProgram.createProgram(gl, SIMPLE_OPTS
       .then(program => {
         program.enable();
 
@@ -40,14 +49,7 @@ describe('KraGL.shaders.Uniforms', () => {
       let canvas = document.createElement('canvas');
       let gl = canvas.getContext('webgl');
 
-      return ShaderProgram.createProgram(gl, {
-        vert: {
-          urls: ['../shaders/old/simple.vert']
-        },
-        frag: {
-          urls: ['../shaders/old/simple.frag']
-        }
-      })
+      return ShaderProgram.createProgram(gl, SIMPLE_OPTS)
       .then(program => {
         program.enable();
 
