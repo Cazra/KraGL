@@ -124,8 +124,36 @@ const Types = {
   },
 
   /**
+   * Gets the typed array class appropriate for encapsulating a GL type.
+   * @param {GLEnum} type
+   * @return {class}
+   */
+  getTypedArray: type => {
+    let unitType = Types.getUnitType(type);
+
+    if(unitType === GL.BYTE)
+      return Int8Array;
+    else if(unitType === GL.UNSIGNED_BYTE)
+      return Uint8Array;
+    else if(unitType === GL.SHORT)
+      return Int16Array;
+    else if(unitType === GL.UNSIGNED_SHORT)
+      return Uint16Array;
+    else if(unitType === GL.INT)
+      return Int32Array;
+    else if(unitType === GL.UNSIGNED_INT)
+      return Uint32Array;
+    else if(unitType === GL.FLOAT)
+      return Float32Array;
+    else if(unitType === GL.BOOL)
+      return Uint32Array;
+  },
+
+  /**
    * Gets the base type for a GL type.
    * For example, the unit type of FLOAT_VEC2 is FLOAT.
+   * @param {GLEnum} type
+   * @return {GLEnum}
    */
   getUnitType: type => {
     return unitTypes[type];

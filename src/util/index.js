@@ -1,5 +1,7 @@
 'use strict';
 
+export * from './Canvas';
+
 /**
  * @namespace util
  * @memberof KraGL
