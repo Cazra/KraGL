@@ -6,17 +6,18 @@
 export class Canvas {
 
   /**
-   * Resizes a canvas's pixel size to its display size.
-   * @param {Element} canvas
-   *        An HTML canvas element.
+   * Resizes a WebGL canvas's pixel size to its display size.
+   * This will also resize the GL viewport.
+   * @param {WebGLRenderingContext} gl
    */
-  static resizeToDisplay(canvas) {
-    let displayWidth = canvas.clientWidth;
-    let displayHeight = canvas.clientHeight;
+  static resizeToDisplay(gl) {
+    let displayWidth = gl.canvas.clientWidth;
+    let displayHeight = gl.canvas.clientHeight;
 
-    if(canvas.width !== displayWidth || canvas.height !== displayHeight) {
-      canvas.width = displayWidth;
-      canvas.height = displayHeight;
+    if(gl.canvas.width !== displayWidth || gl.canvas.height !== displayHeight) {
+      gl.canvas.width = displayWidth;
+      gl.canvas.height = displayHeight;
     }
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   }
 }
