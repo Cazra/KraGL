@@ -102,6 +102,9 @@ export class ShaderLib {
    * @return {KraGL.shaders.ShaderProgram}
    */
   enable(name) {
+    if(name === this._curName)
+      return this._curProgram;
+
     let program = this._programs[name];
     if(!program)
       throw new ShaderError(`The program ${name} doesn't exist.`);

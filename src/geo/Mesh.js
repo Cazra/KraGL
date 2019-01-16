@@ -1,5 +1,7 @@
 'use strict';
 
+import { VBO } from './VBO'; 
+
 /**
  * A 3D object composed of a series of primitives (points, lines, or triangles)
  * defined by some list of vertices.
@@ -114,6 +116,20 @@ export class Mesh {
     this.drawMode = opts.drawMode;
     this.cullMode = opts.cullMode;
     this.frontFace = opts.frontFace;
+
+    // A map of ShaderProgram names to Vertex Buffer Objects (VBOs).
+    this._vbos = {};
+  }
+
+  /**
+   * Unloads any GL resources associated with this mesh.
+   * @param {WebGLRenderingContext} gl
+   */
+  clean(gl) {
+    _.each(this._vbos, vbo => {
+      vbo.clean(gl);
+    });
+    this._vbos = {};
   }
 
   /**
@@ -122,6 +138,27 @@ export class Mesh {
    */
   clone() {
     return this.transform(mat4.identity([]));
+  }
+
+  /**
+   * Renders the mesh using the VBO associated with the currently bound
+   * ShaderProgram.
+   * @param {KraGL.app.Application} app
+   *        The application the mesh is being rendered in.
+   */
+  render(app) {
+    let shaderName = app.shaderLib.curName;
+    let shader = app.shaderLib.curProgram;
+    let gl = app.gl;
+
+    // Create the VBO data for the model if it doesn't already exist for
+    // the current shader.
+    if(!this._vbos[shaderName])
+      this._vbos[shaderName] = new VBO(shader, this);
+
+    // Render the mesh's VBO for the current shader.
+    let vbo = this._vbos[shaderName];
+    vbo.render(gl);
   }
 
   /**

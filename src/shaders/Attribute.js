@@ -4,6 +4,8 @@ import { ShaderVar } from './ShaderVar';
 
 /**
  * A shader variable that varies from vertex to vertex.
+ * For simplicity and optimization, we'll assume that all attributes are of
+ * type GL_FLOAT.
  * @memberof KraGL.shaders
  */
 export class Attribute extends ShaderVar {

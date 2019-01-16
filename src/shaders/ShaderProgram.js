@@ -60,6 +60,14 @@ class ShaderProgram {
   }
 
   /**
+   * The WebGL context this ShaderProgram was created for.
+   * @type {WebGLRenderingContext}
+   */
+  get gl() {
+    return this._gl;
+  }
+
+  /**
    * A map of the program's uniform variables, keyed by name.
    * @type {map<string, KraGL.shaders.Uniform>}
    */
