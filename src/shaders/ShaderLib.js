@@ -72,11 +72,11 @@ export class ShaderLib {
   clean() {
     _.each(this._programs, program => {
       program.clean();
-      this._programs = {};
-      this._curProgram = undefined;
-      this._curName = undefined;
-      this._programStack = [];
     });
+    this._programs = {};
+    this._curProgram = undefined;
+    this._curName = undefined;
+    this._programStack = [];
   }
 
   /**

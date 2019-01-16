@@ -1,5 +1,8 @@
 'use strict';
 
+const Mesh = KraGL.geo.Mesh;
+const Canvas = KraGL.util.Canvas;
+
 /**
  * TODO: This "Hello World" program implements a KraGL application that does
  * just one thing: render a white triangle on a black background. This is
@@ -31,7 +34,6 @@ class ExampleApp extends KraGL.app.Application {
    * @inheritdoc
    */
   initResources() {
-    // TODO
     return Promise.resolve();
   }
 
@@ -39,15 +41,49 @@ class ExampleApp extends KraGL.app.Application {
    * @inheritdoc
    */
   initWebGLResources() {
-    // TODO
-    return Promise.resolve();
+    return Promise.resolve()
+    .then(() => {
+      return this.shaderLib.createPrograms({
+        'simple': {
+          shaders: {
+            frag: {
+              urls: ['./shaders/frag.glsl']
+            },
+            vert: {
+              urls: ['./shaders/vert.glsl']
+            }
+          },
+          attributeGetters: {
+            position: 'xyz'
+          }
+        }
+      })
+      .then(() => {
+        this.shaderLib.enable('simple');
+      });
+    })
+    .then(() => {
+      this.meshLib.add('tri', new Mesh({
+        vertices: [
+          { xyz: [0, 0, 0] },
+          { xyz: [1, 0, 0] },
+          { xyz: [0, 1, 0] }
+        ],
+        indices: [0, 1, 2]
+      }));
+    });
   }
 
   /**
    * @inheritdoc
    */
   render() {
-    // TODO
+    // Clear black by default.
+    Canvas.clear(this.gl);
+    this.shaderLib.enable('simple');
+
+    // Draw a white triangle.
+    this.meshLib.get('tri').render(this);
   }
 
   /**

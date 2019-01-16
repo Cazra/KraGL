@@ -3,16 +3,15 @@
 describe('KraGL.geo.Mesh', () => {
   const assert = chai.assert;
   const Mesh = KraGL.geo.Mesh;
-  const Vertex = KraGL.geo.Vertex;
 
   describe('constructor', () => {
     it('fully specified', () => {
       let mesh = new Mesh({
         vertices: [
-          new Vertex({ xyz: [1,1,0] }),
-          new Vertex({ xyz: [1,-1,0] }),
-          new Vertex({ xyz: [-1,-1,0] }),
-          new Vertex({ xyz: [-1,-2,0] })
+          { xyz: [1,1,0] },
+          { xyz: [1,-1,0] },
+          { xyz: [-1,-1,0] },
+          { xyz: [-1,-2,0] }
         ],
         indices: [0,1,2,3,0],
         cullMode: GL_FRONT,
@@ -33,10 +32,10 @@ describe('KraGL.geo.Mesh', () => {
     it('minimally specified', () => {
       let mesh = new Mesh({
         vertices: [
-          new Vertex({ xyz: [0,0,0] }),
-          new Vertex({ xyz: [1,0,0] }),
-          new Vertex({ xyz: [1,1,0] }),
-          new Vertex({ xyz: [0,1,0] })
+          { xyz: [0,0,0] },
+          { xyz: [1,0,0] },
+          { xyz: [1,1,0] },
+          { xyz: [0,1,0] }
         ],
         indices: [0,1,2, 2,3,0]
       });
@@ -56,10 +55,10 @@ describe('KraGL.geo.Mesh', () => {
     it('normal', () => {
       let mesh = new Mesh({
         vertices: [
-          new Vertex({ xyz: [0,0,0] }),
-          new Vertex({ xyz: [1,0,0] }),
-          new Vertex({ xyz: [1,1,0] }),
-          new Vertex({ xyz: [0,1,0] })
+          { xyz: [0,0,0] },
+          { xyz: [1,0,0] },
+          { xyz: [1,1,0] },
+          { xyz: [0,1,0] }
         ],
         indices: [0,1,2, 2,3,0]
       });
@@ -71,10 +70,10 @@ describe('KraGL.geo.Mesh', () => {
     it('normal', () => {
       let mesh = new Mesh({
         vertices: [
-          new Vertex({ xyz: [0,0,0] }),
-          new Vertex({ xyz: [1,0,0] }),
-          new Vertex({ xyz: [1,1,0] }),
-          new Vertex({ xyz: [0,1,0] })
+          { xyz: [0,0,0] },
+          { xyz: [1,0,0] },
+          { xyz: [1,1,0] },
+          { xyz: [0,1,0] }
         ],
         indices: [0,1,2, 2,3,0]
       });
@@ -95,10 +94,10 @@ describe('KraGL.geo.Mesh', () => {
     it('normal', () => {
       let mesh1 = new Mesh({
         vertices: [
-          new Vertex({ xyz: [0,0,0] }),
-          new Vertex({ xyz: [1,0,0] }),
-          new Vertex({ xyz: [1,1,0] }),
-          new Vertex({ xyz: [0,1,0] })
+          { xyz: [0,0,0] },
+          { xyz: [1,0,0] },
+          { xyz: [1,1,0] },
+          { xyz: [0,1,0] }
         ],
         indices: [0,1,2, 2,3,0]
       });

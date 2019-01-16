@@ -1,6 +1,7 @@
 'use strict';
 
-import { VBO } from './VBO'; 
+import { VBO } from './VBO';
+import { Vertex } from './Vertex';
 
 /**
  * A 3D object composed of a series of primitives (points, lines, or triangles)
@@ -107,11 +108,20 @@ export class Mesh {
    * @param {uint[]} opts.indices
    *        The list of indices specifying the order to draw the vertices as
    *        more complex primitives defined by drawMode.
-   * @param {KraGL.geo.Vertex[]} opts.vertices
-   *        The vertices defining the mesh.
+   * @param {class} [opts.vertexClass=KraGL.geo.Vertex]
+   *        The class used to construct the vertices.
+   *        If given, this must be a child class of KraGL.geo.Vertex.
+   * @param {object} opts.vertices
+   *        A list of options for constructing the mesh's vertices.
    */
   constructor(opts) {
-    this.vertices = opts.vertices;
+    let VertClass = opts.vertexClass || Vertex;
+
+    this.vertices = [];
+    _.each(opts.vertices, vertOpts => {
+      let vertex = new VertClass(vertOpts);
+      this.vertices.push(vertex);
+    });
     this.indices = opts.indices;
     this.drawMode = opts.drawMode;
     this.cullMode = opts.cullMode;

@@ -1,8 +1,9 @@
 'use strict';
 
+import { MeshLib } from '../geo';
+import { ShaderLib } from '../shaders';
 import { AbstractError } from '../AbstractError';
 import { KraGLError } from '../KraGLError';
-import { ShaderLib } from '../shaders';
 import { FPSCounter } from './FPSCounter';
 
 const NOT_STARTED = 0;
@@ -97,6 +98,14 @@ export class Application {
   }
 
   /**
+   * The application's global library of Meshes.
+   * @type {KraGL.geo.MeshLib}
+   */
+  get meshLib() {
+    return this._meshLib;
+  }
+
+  /**
    * The application's global library of ShaderPrograms.
    * @type {KraGL.shaders.ShaderLib}
    */
@@ -165,8 +174,9 @@ export class Application {
 
     this._gl = this._canvas.getContext(contextType, glAttrs);
 
-    // Create a ShaderLib for this application.
+    // Create global resource libraries for the application.
     this._shaderLib = new ShaderLib(this._gl);
+    this._meshLib = new MeshLib(this._gl);
 
     this._fpsCounter = new FPSCounter();
 
