@@ -63,13 +63,33 @@ class ExampleApp extends KraGL.app.Application {
       });
     })
     .then(() => {
-      this.meshLib.add('tri', new Mesh({
+      this.meshLib.add('tri1', new Mesh({
         vertices: [
           { xyz: [0, 0, 0] },
           { xyz: [1, 0, 0] },
           { xyz: [0, 1, 0] }
         ],
         indices: [0, 1, 2]
+      }));
+
+      this.meshLib.add('tri2', new Mesh({
+        vertices: [
+          { xyz: [0, -1, 0] },
+          { xyz: [-0.5, -1, 0] },
+          { xyz: [0, -0.5, 0] }
+        ],
+        indices: [0, 1, 2],
+        cullMode: GL_FRONT
+      }));
+
+      this.meshLib.add('square', new Mesh({
+        vertices: [
+          { xyz: [-1, 0, 0] },
+          { xyz: [-0.5, 0, 0] },
+          { xyz: [-0.5, 0.5, 0] },
+          { xyz: [-1, 0.5, 0] }
+        ],
+        indices: [0, 1, 2,  2, 3, 0]
       }));
     });
   }
@@ -83,14 +103,17 @@ class ExampleApp extends KraGL.app.Application {
     this.shaderLib.enable('simple');
 
     // Draw a white triangle.
-    this.meshLib.get('tri').render(this);
+    this.meshLib.get('tri1').render(this);
+    //this.meshLib.get('tri2').render(this);
+    //this.meshLib.get('square').render(this);
   }
 
   /**
    * @inheritdoc
    */
   update() {
-    // TODO
+    // Nothing too interesting here. Just write the current framerate to the
+    // console.
     console.log(this.fps.toFixed(1));
   }
 }

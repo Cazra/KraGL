@@ -173,10 +173,14 @@ export class Application {
       glAttrs.stencil = true;
 
     this._gl = this._canvas.getContext(contextType, glAttrs);
+    let gl = this._gl;
+
+    // Enable face culling for better performance.
+    gl.enable(GL_CULL_FACE);
 
     // Create global resource libraries for the application.
-    this._shaderLib = new ShaderLib(this._gl);
-    this._meshLib = new MeshLib(this._gl);
+    this._shaderLib = new ShaderLib(gl);
+    this._meshLib = new MeshLib(gl);
 
     this._fpsCounter = new FPSCounter();
 

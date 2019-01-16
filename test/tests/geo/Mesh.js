@@ -45,7 +45,7 @@ describe('KraGL.geo.Mesh', () => {
       assert.vecApproximately(mesh.vertices[3].xyz, [0,1,0,1], 0.00001);
 
       assert.deepEqual(mesh.indices, [0,1,2, 2,3,0]);
-      assert.equal(mesh.cullMode, GL_FRONT_AND_BACK);
+      assert.equal(mesh.cullMode, GL_BACK);
       assert.equal(mesh.drawMode, GL_TRIANGLES);
       assert.equal(mesh.frontFace, GL_CCW);
     });
@@ -84,7 +84,7 @@ describe('KraGL.geo.Mesh', () => {
       assert.vecApproximately(clone.vertices[3].xyz, [0,1,0,1], 0.00001);
 
       assert.deepEqual(clone.indices, [0,1,2, 2,3,0]);
-      assert.equal(clone.cullMode, GL_FRONT_AND_BACK);
+      assert.equal(clone.cullMode, GL_BACK);
       assert.equal(clone.drawMode, GL_TRIANGLES);
       assert.equal(clone.frontFace, GL_CCW);
     });

@@ -118,6 +118,7 @@ module.exports = function(grunt) {
 
           GL_ACTIVE_UNIFORMS: false,
           GL_ACTIVE_ATTRIBUTES: false,
+          GL_BACK: false,
           GL_BOOL: false,
           GL_BOOL_VEC2: false,
           GL_BOOL_VEC3: false,
@@ -133,6 +134,7 @@ module.exports = function(grunt) {
           GL_FLOAT_VEC3: false,
           GL_FLOAT_VEC4: false,
           GL_FRAGMENT_SHADER: false,
+          GL_FRONT: false,
           GL_FRONT_AND_BACK: false,
           GL_INT: false,
           GL_INT_VEC2: false,

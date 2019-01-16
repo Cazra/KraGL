@@ -30,16 +30,16 @@ export class Mesh {
 
   /**
    * The mesh's face culling mode. This can be any of the following:
-   * GL_FRONT: draw only front faces for each triangle.
-   * GL_BACK: draw only back faces for each triangle.
-   * GL_FRONT_AND_BACK: draw both faces for each triangle.
+   * GL_FRONT: cull front faces for each triangle.
+   * GL_BACK: cull back faces for each triangle.
+   * GL_FRONT_AND_BACK: cull both faces for each triangle.
    * @type {GLenum}
    */
   get cullMode() {
     return this._cullMode;
   }
   set cullMode(mode) {
-    this._cullMode = mode || GL_FRONT_AND_BACK;
+    this._cullMode = mode || GL_BACK;
   }
 
   /**
@@ -161,6 +161,10 @@ export class Mesh {
     let shader = app.shaderLib.curProgram;
     let gl = app.gl;
 
+    // Set up GL state.
+    gl.cullFace(this.cullMode);
+    gl.frontFace(this.frontFace);
+
     // Create the VBO data for the model if it doesn't already exist for
     // the current shader.
     if(!this._vbos[shaderName])
@@ -168,7 +172,7 @@ export class Mesh {
 
     // Render the mesh's VBO for the current shader.
     let vbo = this._vbos[shaderName];
-    vbo.render(gl);
+    vbo.render(gl, this.drawMode);
   }
 
   /**

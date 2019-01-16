@@ -31,21 +31,6 @@ export class VBO {
   }
 
   /**
-   * The VBO's drawing mode. This defines how the indices should be ordered
-   * to draw each primitive. This can be any of the following:
-   * GL_POINTS: Each vertex is drawn as a point.
-   * GL_LINES: Every 2 vertices are drawn as a line segment.
-   * GL_LINE_STRIP: A line is drawn from each vertex to the next vertex.
-   * GL_LINE_LOOP: A line is drawn from each vertex to the next, plus a line
-   *    connecting the last vertex to the first.
-   * GL_TRIANGLES: Every 3 vertices are drawn as a triangle.
-   * @type {GLenum}
-   */
-  get drawMode() {
-    return this._drawMode;
-  }
-
-  /**
    * The GL buffer containing the loaded vertex indices.
    * @type {WebGLBuffer}
    */
@@ -76,7 +61,6 @@ export class VBO {
    *        The mesh whose data will be loaded into the VBO.
    */
   constructor(shader, mesh) {
-    this._drawMode = mesh.drawMode;
     this._initStrideAndOffsets(shader);
     this._initAttrBuffer(shader, mesh);
     this._initIndexBuffer(shader, mesh);
@@ -172,9 +156,17 @@ export class VBO {
   /**
    * Renders the VBO. It is assumed that the currently loaded ShaderProgram
    * is the one associated with this VBO.
-   * @param {WebGLRenderingContext}
+   * @param {WebGLRenderingContext} gl
+   * @param {GLenum} drawMode
+   *        The primitive drawing mode. This can be any of the following:
+   *        GL_POINTS: Each vertex is drawn as a point.
+   *        GL_LINES: Every 2 vertices are drawn as a line segment.
+   *        GL_LINE_STRIP: A line is drawn from each vertex to the next vertex.
+   *        GL_LINE_LOOP: A line is drawn from each vertex to the next,
+   *          plus a line connecting the last vertex to the first.
+   *        GL_TRIANGLES: Every 3 vertices are drawn as a triangle.
    */
-  render(gl) {
+  render(gl, drawMode) {
     // Bind the attributes.
     gl.bindBuffer(GL_ARRAY_BUFFER, this.attrBuffer);
     _.each(this.attributes, (attr, index) => {
@@ -184,6 +176,6 @@ export class VBO {
 
     // Bind the indices and draw the VBO's data.
     gl.bindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-    gl.drawElements(this.drawMode, this.indexCount, GL_UNSIGNED_SHORT, 0);
+    gl.drawElements(drawMode, this.indexCount, GL_UNSIGNED_SHORT, 0);
   }
 }
