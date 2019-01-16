@@ -150,7 +150,8 @@ export class VBO {
    */
   _initStrideAndOffsets(shader) {
     // Get the sorted attribute names.
-    let attrNames = _.keys(shader.attributes).sort();
+    let attrNames = _.keys(shader.attributes);
+    attrNames.sort();
 
     let curOffset = 0;
     this._attrs = [];

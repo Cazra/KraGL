@@ -43,7 +43,7 @@ export class Vertex {
   }
   set t(v) {
     if(!v) {
-      // Auto-calculate t to be orthogonal to n.
+      // If undefined, auto-calculate t to be orthogonal to n.
       let nHat = vec3.normalize([], this.n);
       let up = [0,1,0];
       if(nHat[1] === 1)
