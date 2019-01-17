@@ -17,6 +17,17 @@ describe('KraGL.shaders.ShaderProgram', () => {
       vertexNormal: 'n',
       vertexPos: 'xyz',
       vertexTexCoords: 'texST'
+    },
+    uniformGetters: {
+      mvpTrans: 'mvpTrans',
+      normalTrans: 'normalTrans',
+      opacity: 'opacity',
+      fogColor: 'fogColor',
+      fogEquation: 'fogEquation',
+      fogDensity: 'fogDensity',
+      solidColor: 'color',
+      tex: 'texture',
+      useTex: 'textureFlag'
     }
   };
 
@@ -77,15 +88,15 @@ describe('KraGL.shaders.ShaderProgram', () => {
     });
   });
 
-  describe('vertClass', () => {
-    it('default', () => {
+  describe('getPropertyUniform', () => {
+    it('simple shader', () => {
       let canvas = document.createElement('canvas');
       let gl = canvas.getContext('webgl');
 
       return ShaderProgram.createProgram(gl, SIMPLE_OPTS)
       .then(program => {
-        assert.equal(program.vertClass, KraGL.geo.Vertex);
-
+        let uniform = program.getPropertyUniform('texture');
+        assert.equal(uniform.name, 'tex');
         program.clean();
       });
     });

@@ -124,6 +124,7 @@ module.exports = function(grunt) {
           GL_BOOL_VEC3: false,
           GL_BOOL_VEC4: false,
           GL_CCW: false,
+          GL_CW: false,
           GL_COMPILE_STATUS: false,
           GL_CURRENT_VERTEX_ATTRIB: false,
           GL_FLOAT: false,

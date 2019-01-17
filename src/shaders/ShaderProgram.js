@@ -8,9 +8,9 @@ import { Uniform } from './Uniform';
 /**
  * Options for creating a ShaderProgram.
  * @typedef {object} ProgramOpts
- * @property {map<string, function>} attributeGetters
- *           A mapping of shader attribute names to their corresponding
- *           vertex property getters.
+ * @property {map<string, string>} attributeGetters
+ *           A mapping of shader attribute names to the names of their
+ *           corresponding Vertex properties.
  *           e.g.:
  *           {
  *              position: 'xyz',
@@ -22,9 +22,14 @@ import { Uniform } from './Uniform';
  *           Options for the fragment shader.
  * @property {ShaderOpts} shaders.vert
  *           Options for the vertex shader.
- * @property {class} [vertClass]
- *           The class used for vertices by the program.
- *           If not given, it will use the default Vertex class.
+ * @property {map<string, string>} uniformGetters
+ *           A mapping of shader uniform names to supported KraGL properties.
+ *           e.g.:
+ *           {
+ *              u_tex1: 'texture',
+ *              u_bones: 'bones',
+ *              u_fogColor: 'fogColor'
+ *           }
  */
 
 /**
@@ -76,15 +81,6 @@ class ShaderProgram {
   }
 
   /**
-   * The class used for vertices by this program. If this wasn't provided
-   * in the program's opts, this will use KraGL's default Vertex class.
-   * @type {class}
-   */
-  get vertClass() {
-    return this._vertClass;
-  }
-
-  /**
    * Please do not directly use the constructor. Create ShaderProgram through
    * the static createProgram method instead.
    * @private
@@ -92,14 +88,20 @@ class ShaderProgram {
    * @param {WebGLProgram} opts.program
    * @param {map<string, KraGL.shaders.Uniform>} opts.uniforms
    * @param {map<string, KraGL.shaders.Attribute>} opts.attributes
-   * @param {class} [vertClass]
    */
   constructor(gl, opts) {
     this._gl = gl;
     this._program = opts.program;
     this._uniforms = opts.uniforms;
     this._attributes = opts.attributes;
-    this._vertClass = opts.vertClass || KraGL.geo.Vertex;
+
+    // Create a map of KraGL property names to uniform names.
+    this._propsToUniforms = {};
+    _.each(this._uniforms, uniform => {
+      let propName = uniform.propertyName;
+      if(propName)
+        this._propsToUniforms[propName] = uniform;
+    });
   }
 
   /**
@@ -128,15 +130,17 @@ class ShaderProgram {
    * @private
    * @param {WebGL} gl
    * @param {WebGLProgram} program
+   * @param {ProgramOpts} opts
    * @return {map<string, KraGL.shaders.Uniform>}
    *         A map of the uniform variables, keyed by name.
    */
-  static _analyzeUniforms(gl, program) {
+  static _analyzeUniforms(gl, program, opts) {
     let result = {};
     let count = gl.getProgramParameter(program, GL_ACTIVE_UNIFORMS);
     _.each(_.range(count), i => {
       let info = gl.getActiveUniform(program, i);
-      let uniform = new Uniform(gl, program, info);
+      let getterName = opts.uniformGetters[info.name];
+      let uniform = new Uniform(gl, program, info, getterName);
       result[info.name] = uniform;
     });
     return result;
@@ -161,11 +165,10 @@ class ShaderProgram {
       fragSrc);
 
     let program = ShaderProgram._linkProgram(gl, vertShader, fragShader);
-    let uniforms = ShaderProgram._analyzeUniforms(gl, program);
+    let uniforms = ShaderProgram._analyzeUniforms(gl, program, opts);
     let attributes = ShaderProgram._analyzeAttributes(gl, program, opts);
-    let vertClass = opts.vertClass;
 
-    return new ShaderProgram(gl, { attributes, program, uniforms, vertClass });
+    return new ShaderProgram(gl, { attributes, program, uniforms });
   }
 
   /**
@@ -296,6 +299,15 @@ class ShaderProgram {
     _.each(this._attributes, attr => {
       attr.disable();
     });
+  }
+
+  /**
+   * Gets the Uniform bound to some KraGL property.
+   * @param {string} propName
+   * @return {KraGL.shaders.Uniform}
+   */
+  getPropertyUniform(propName) {
+    return this._propsToUniforms[propName];
   }
 
   /**

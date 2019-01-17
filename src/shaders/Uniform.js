@@ -73,6 +73,14 @@ export class Uniform extends ShaderVar {
   }
 
   /**
+   * The name of the KraGL property this uniform is used for.
+   * @type {string}
+   */
+  get propertyName() {
+    return this._propName;
+  }
+
+  /**
    * The current value of the uniform.
    * @type {(number|number[])}
    */
@@ -91,9 +99,10 @@ export class Uniform extends ShaderVar {
    * @param {WebGLProgram} program
    * @param {WebGLActiveInfo} info
    */
-  constructor(gl, program, info) {
+  constructor(gl, program, info, propName) {
     super(program, info);
     this._gl = gl;
     this._location = this._gl.getUniformLocation(program, info.name);
+    this._propName = propName;
   }
 }

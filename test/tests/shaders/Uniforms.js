@@ -1,6 +1,6 @@
 'use strict';
 
-describe('KraGL.shaders.Uniforms', () => {
+describe('KraGL.shaders.Uniform', () => {
   const assert = chai.assert;
   const ShaderProgram = KraGL.shaders.ShaderProgram;
 
@@ -17,6 +17,17 @@ describe('KraGL.shaders.Uniforms', () => {
       vertexNormal: 'n',
       vertexPos: 'xyz',
       vertexTexCoords: 'texST'
+    },
+    uniformGetters: {
+      mvpTrans: 'mvpTrans',
+      normalTrans: 'normalTrans',
+      opacity: 'opacity',
+      fogColor: 'fogColor',
+      fogEquation: 'fogEquation',
+      fogDensity: 'fogDensity',
+      solidColor: 'color',
+      tex: 'texture',
+      useTex: 'textureFlag'
     }
   };
 
@@ -25,7 +36,7 @@ describe('KraGL.shaders.Uniforms', () => {
       let canvas = document.createElement('canvas');
       let gl = canvas.getContext('webgl');
 
-      return ShaderProgram.createProgram(gl, SIMPLE_OPTS
+      return ShaderProgram.createProgram(gl, SIMPLE_OPTS)
       .then(program => {
         program.enable();
 

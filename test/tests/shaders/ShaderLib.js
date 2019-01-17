@@ -18,6 +18,17 @@ describe('KraGL.shaders.ShaderLib', () => {
       vertexNormal: 'n',
       vertexPos: 'xyz',
       vertexTexCoords: 'texST'
+    },
+    uniformGetters: {
+      mvpTrans: 'mvpTrans',
+      normalTrans: 'normalTrans',
+      opacity: 'opacity',
+      fogColor: 'fogColor',
+      fogEquation: 'fogEquation',
+      fogDensity: 'fogDensity',
+      solidColor: 'color',
+      tex: 'texture',
+      useTex: 'textureFlag'
     }
   };
 
@@ -34,6 +45,15 @@ describe('KraGL.shaders.ShaderLib', () => {
       vertexNormal: 'n',
       vertexPos: 'xyz',
       vertexTexCoords: 'texST'
+    },
+    uniformGetters: {
+      mvpTrans: 'mvpTrans',
+      normalTrans: 'normalTrans',
+      fogColor: 'fogColor',
+      fogEquation: 'fogEquation',
+      fogDensity: 'fogDensity',
+      tex: 'texture',
+      useTex: 'textureFlag'
     }
   };
 
@@ -47,6 +67,21 @@ describe('KraGL.shaders.ShaderLib', () => {
       vertexPos: 'xyz',
       vertexTang: 't',
       vertexTexCoords: 'texST'
+    },
+    uniformGetters: {
+      mvpTrans: 'mvpTrans',
+      mvTrans: 'mvTrans',
+      vTrans: 'vTrans',
+      normalTrans: 'normalTrans',
+      opacity: 'opacity',
+      fogColor: 'fogColor',
+      fogEquation: 'fogEquation',
+      fogDensity: 'fogDensity',
+      solidColor: 'color',
+      tex: 'texture',
+      useTex: 'textureFlag',
+      bumpTex: 'bumpTexture',
+      useBumpTex: 'bumpTextureFlag'
     }
   };
 

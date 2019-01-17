@@ -17,6 +17,17 @@ describe('KraGL.shaders.Attributes', () => {
       vertexNormal: 'n',
       vertexPos: 'xyz',
       vertexTexCoords: 'texST'
+    },
+    uniformGetters: {
+      mvpTrans: 'mvpTrans',
+      normalTrans: 'normalTrans',
+      opacity: 'opacity',
+      fogColor: 'fogColor',
+      fogEquation: 'fogEquation',
+      fogDensity: 'fogDensity',
+      solidColor: 'color',
+      tex: 'texture',
+      useTex: 'textureFlag'
     }
   };
 
