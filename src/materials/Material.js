@@ -19,9 +19,9 @@ class Material {
    * Binds the resources associated with the material to the WebGL context
    * and to any shader variables that require it in the current shader.
    * @abstract
-   * @param {WebGL} gl
+   * @param {WebGLRenderingContext} app
    */
-  bind(gl) {
+  bind(app) {
     _.noop(gl);
     throw new AbstractError();
   }

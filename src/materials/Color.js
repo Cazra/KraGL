@@ -8,6 +8,10 @@ import { Material } from './Material';
  * but internally they are represented as a vec4 in normalized RGBA format.
  * This means that each RGBA component of the color is a float in the range
  * [0, 1].
+ *
+ * This can be bound to the Uniform assigned to the "color" property.
+ * This Uniform is expected to be of type vec4.
+ *
  * @memberof KraGL.materials
  * @implements {Cloneable}
  */
@@ -332,9 +336,11 @@ class Color extends Material {
   /**
    * @inheritdoc
    */
-  bind(gl) {
-    _.noop(gl);
-    throw new Error('TODO: Implement this!');
+  bind(app) {
+    let shader = app.shaderLib.curProgram;
+    let uniform = shader.getPropertyUniform('color');
+    if(uniform)
+      uniform.value = this.rgba;
   }
 
   /**
