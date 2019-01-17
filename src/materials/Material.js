@@ -22,7 +22,7 @@ class Material {
    * @param {WebGLRenderingContext} app
    */
   bind(app) {
-    _.noop(gl);
+    _.noop(app);
     throw new AbstractError();
   }
 
