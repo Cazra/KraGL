@@ -256,12 +256,15 @@ describe('KraGL.materials.Color', () => {
     });
   });
 
-  describe('load', () => {
+  describe('static create', () => {
     it('normal', () => {
       let canvas = document.createElement('canvas');
       let gl = canvas.getContext('webgl');
-      let color = new Color({ css: 'blue' });
-      color.load(gl);
+
+      return Color.create(gl, { css: 'blue' })
+      .then(color => {
+        assert.equal(color.hex, 0xFF0000FF);
+      });
     });
   });
 });

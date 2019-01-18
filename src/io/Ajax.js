@@ -144,6 +144,28 @@ export class Ajax {
   }
 
   /**
+   * Loads an image from an external resource.
+   * @param {string} url
+   * @param {AjaxOptions} [opts]
+   * @return {Promise<Image>}
+   */
+  static getImage(url, opts) {
+    _.noop(opts);
+
+    return new Promise((resolve, reject) => {
+      let image = new Image();
+      image.addEventListener('load', () => {
+        resolve(image);
+      });
+      image.addEventListener('error', () => {
+        let err = new IOError(`Failed to load image from URL ${url}.`);
+        reject(err);
+      });
+      image.src = url;
+    });
+  }
+
+  /**
    * Loads JSON data from an external resource.
    * @param {string} url
    * @param {AjaxOptions} [opts]

@@ -4,6 +4,33 @@ import { ValidationError } from '../ValidationError';
 import { Material } from './Material';
 
 /**
+ * @typedef {object} ColorOpts
+ * @property {string} [css]
+ *        Specifies the color as any valid CSS color value.
+ * @property {uint32} [hex]
+ *        Specifies the color as an unsigned 32-bit integer in ARGB format.
+ * @property {vec3} [hsb]
+ *        Specifies the color in normalized HSB format (the alpha component
+ *        will be set to 1).
+ * @property {vec4} [hsba]
+ *        Specifies the color in normalized HSBA format.
+ * @property {vec3} [hsl]
+ *        Specifies the color in normalized HSL format.
+ * @property {vec4} [hsla]
+ *        Specifies the color in normalized HSLA format.
+ * @property {vec3} [rgb]
+ *        Specifies the color in normalized RGB format (the alpha component
+ *        will be set to 1).
+ * @property {vec3} [rgbBytes]
+ *        Specifies the color in RGB format with each component as an
+ *        unsigned byte value.
+ * @property {vec4} [rgba]
+ *        Specifies the color in normalized RGBA format.
+ * @property {vec4} [rgbaBytes]
+ *        Specifies the color in RGBA format with each
+ */
+
+/**
  * A Material for a uniform color. Colors support various types of formats,
  * but internally they are represented as a vec4 in normalized RGBA format.
  * This means that each RGBA component of the color is a float in the range
@@ -282,30 +309,8 @@ class Color extends Material {
   }
 
   /**
-   * @param {object} opts
-   * @param {string} [css]
-   *        Specifies the color as any valid CSS color value.
-   * @param {uint32} [hex]
-   *        Specifies the color as an unsigned 32-bit integer in ARGB format.
-   * @param {vec3} [hsb]
-   *        Specifies the color in normalized HSB format (the alpha component
-   *        will be set to 1).
-   * @param {vec4} [hsba]
-   *        Specifies the color in normalized HSBA format.
-   * @param {vec3} [hsl]
-   *        Specifies the color in normalized HSL format.
-   * @param {vec4} [hsla]
-   *        Specifies the color in normalized HSLA format.
-   * @param {vec3} [rgb]
-   *        Specifies the color in normalized RGB format (the alpha component
-   *        will be set to 1).
-   * @param {vec3} [rgbBytes]
-   *        Specifies the color in RGB format with each component as an
-   *        unsigned byte value.
-   * @param {vec4} [rgba]
-   *        Specifies the color in normalized RGBA format.
-   * @param {vec4} [rgbaBytes]
-   *        Specifies the color in RGBA format with each
+   * @private
+   * @param {ColorOpts} opts
    */
   constructor(opts) {
     super(opts);
@@ -331,6 +336,18 @@ class Color extends Material {
       this.rgbaBytes = opts.rgbaBytes;
     else
       throw new ValidationError('No valid color format was specified.');
+  }
+
+  /**
+   * Asynchronously create a new Color.
+   * @param {WebGLRenderingContext} gl
+   * @param {object} opts
+   * @return {Promise<KraGL.materials.Color>}
+   */
+  static create(gl, opts) {
+    _.noop(gl);
+    let color = new Color(opts);
+    return Promise.resolve(color);
   }
 
   /**
@@ -371,15 +388,6 @@ class Color extends Material {
       this.g === other.g &&
       this.b === other.b &&
       this.a === other.a;
-  }
-
-  /**
-   * @inheritdoc
-   */
-  load(gl) {
-    // Loading a color is trivial.
-    _.noop(gl);
-    return Promise.resolve();
   }
 }
 export { Color };

@@ -37,17 +37,5 @@ class Material {
     _.noop(gl);
     throw new AbstractError();
   }
-
-  /**
-   * Loads all the resources associated with the material into the WebGL
-   * context.
-   * @abstract
-   * @param {WebGL} gl
-   * @return {Promise}
-   */
-  load(gl) {
-    _.noop(gl);
-    throw new AbstractError();
-  }
 }
 export { Material };
