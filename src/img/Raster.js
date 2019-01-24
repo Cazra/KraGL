@@ -110,7 +110,7 @@ export class Raster {
    * @param {RasterOpts} [opts]
    * @return {Promise<KraGL.img.Raster>}
    */
-  static createFromURl(url, opts) {
+  static createFromURL(url, opts) {
     opts = opts || {};
 
     return Ajax.getImage(url)

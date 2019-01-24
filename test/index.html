@@ -4,6 +4,12 @@
   <meta charset="utf-8">
   <title>KraGL tests</title>
   <link rel="stylesheet" media="all" href="vendor/mocha.css">
+  <style type="text/css">
+    #KraGL_imgDebug > * {
+      display: block;
+      margin: 10px;
+    }
+  </style>
 </head>
 <body>
   <div id="mocha"><p><a href=".">Index</a></p></div>
@@ -20,6 +26,7 @@
   <script src="chai_ext.js"></script>
 
   <script src="tests/index.js"></script>
+    <script src="tests/KraGLError.js"></script>
 
   <script src="tests/app/index.js"></script>
     <script src="tests/app/Application.js"></script>
@@ -30,6 +37,12 @@
     <script src="tests/geo/Mesh.js"></script>
     <script src="tests/geo/MeshLib.js"></script>
     <script src="tests/geo/Vertex.js"></script>
+
+  <script src="tests/img/index.js"></script>
+    <script src="tests/img/Raster.js"></script>
+
+  <script src="tests/io/index.js"></script>
+    <script src="tests/io/IOError.js"></script>
 
   <script src="tests/materials/index.js"></script>
     <script src="tests/materials/Color.js"></script>
@@ -52,5 +65,7 @@
     <script src="./tests/util/Canvas.js"></script>
 
   <script>mocha.run();</script>
+
+  <div id="KraGL_imgDebug"></div>
 </body>
 </html>
