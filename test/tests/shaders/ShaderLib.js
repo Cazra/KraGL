@@ -17,7 +17,7 @@ describe('KraGL.shaders.ShaderLib', () => {
     attributeGetters: {
       vertexNormal: 'n',
       vertexPos: 'xyz',
-      vertexTexCoords: 'texST'
+      vertexTexCoords: 'uv'
     },
     uniformGetters: {
       mvpTrans: 'mvpTrans',
@@ -44,7 +44,7 @@ describe('KraGL.shaders.ShaderLib', () => {
     attributeGetters: {
       vertexNormal: 'n',
       vertexPos: 'xyz',
-      vertexTexCoords: 'texST'
+      vertexTexCoords: 'uv'
     },
     uniformGetters: {
       mvpTrans: 'mvpTrans',
@@ -66,7 +66,7 @@ describe('KraGL.shaders.ShaderLib', () => {
       vertexNormal: 'n',
       vertexPos: 'xyz',
       vertexTang: 't',
-      vertexTexCoords: 'texST'
+      vertexTexCoords: 'uv'
     },
     uniformGetters: {
       mvpTrans: 'mvpTrans',

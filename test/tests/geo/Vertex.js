@@ -11,13 +11,13 @@ describe('KraGL.geo.Vertex', () => {
         xyz: [1,2,3],
         n: [0,0,1],
         t: [1,0,0],
-        texST: [0.3, 0.2],
+        uv: [0.3, 0.2],
         color: new Color({ hex: 0xFFFFAAAA })
       });
       assert.vecApproximately(vert.xyz, [1,2,3,1], 0.00001);
       assert.vecApproximately(vert.n, [0,0,1], 0.000001);
       assert.vecApproximately(vert.t, [1,0,0], 0.000001);
-      assert.vecApproximately(vert.texST, [0.3, 0.2], 0.000001);
+      assert.vecApproximately(vert.uv, [0.3, 0.2], 0.000001);
       assert.equal(vert.color.hex, 0xFFFFAAAA);
     });
 
@@ -28,7 +28,7 @@ describe('KraGL.geo.Vertex', () => {
       assert.vecApproximately(vert.xyz, [1,2,3,1], 0.00001);
       assert.vecApproximately(vert.n, [0,0,1], 0.000001);
       assert.vecApproximately(vert.t, [1,0,0], 0.000001);
-      assert.vecApproximately(vert.texST, [0, 0], 0.000001);
+      assert.vecApproximately(vert.uv, [0, 0], 0.000001);
       assert.equal(vert.color.hex, 0xFFFFFFFF);
     });
   });
@@ -39,7 +39,7 @@ describe('KraGL.geo.Vertex', () => {
         xyz: [1,2,3],
         n: [0,0,1],
         t: [1,0,0],
-        texST: [0.3, 0.2],
+        uv: [0.3, 0.2],
         color: new Color({ hex: 0xFFFFAAAA })
       });
       let clone = vert.clone();
@@ -47,7 +47,7 @@ describe('KraGL.geo.Vertex', () => {
       assert.vecApproximately(clone.xyz, [1,2,3,1], 0.00001);
       assert.vecApproximately(clone.n, [0,0,1], 0.000001);
       assert.vecApproximately(clone.t, [1,0,0], 0.000001);
-      assert.vecApproximately(clone.texST, [0.3, 0.2], 0.000001);
+      assert.vecApproximately(clone.uv, [0.3, 0.2], 0.000001);
       assert.equal(clone.color.hex, 0xFFFFAAAA);
     });
   });
@@ -63,14 +63,14 @@ describe('KraGL.geo.Vertex', () => {
         n: [1,0,1],
         t: [1,0,-1],
         color: new Color({ hex: 0xFFAABBCC }),
-        texST: [0.1, 0.2]
+        uv: [0.1, 0.2]
       });
       let vert2 = vert1.transform(m);
       assert.vecApproximately(vert2.xyz, [-19, 52, 8, 1], 0.00001);
       assert.vecApproximately(vert2.n, [0,1,1], 0.000001);
       assert.vecApproximately(vert2.t, [0,1,-1], 0.000001);
       assert.equal(vert2.color.hex, 0xFFAABBCC);
-      assert.vecApproximately(vert2.texST, [0.1, 0.2], 0.000001);
+      assert.vecApproximately(vert2.uv, [0.1, 0.2], 0.000001);
     });
   });
 });

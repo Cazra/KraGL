@@ -1,5 +1,6 @@
 'use strict';
 
+import { GeometryError } from './GeometryError'; 
 import { VBO } from './VBO';
 import { Vertex } from './Vertex';
 
@@ -148,6 +149,38 @@ export class Mesh {
    */
   clone() {
     return this.transform(mat4.identity([]));
+  }
+
+  /**
+   * Generates the tangent and bitangent vectors for each each vertex in the
+   * mesh, based on relative texture coordinates.
+   */
+  _generateTangents() {
+    let visited = new Set();
+
+    if(this.drawMode === GL_TRIANGLES) {
+      let numTriangles = Math.floor(this.indices.length/3);
+
+      _.each(numTriangles, triIndex => {
+        let i1 = this.indices[triIndex * 3];
+        let i2 = this.indices[triIndex * 3 + 1];
+        let i3 = this.indices[triIndex * 3 + 2];
+
+        let v1 = this.vertices[i1];
+        let v2 = this.vertices[i2];
+        let v3 = this.vertices[i3];
+
+        this._generateTangentForVertex(visited, v1, v2, v3);
+        this._generateTangentForVertex(visited, v2, v3, v1);
+        this._generateTangentForVertex(visited, v3, v1, v2);
+      });
+    }
+    throw new GeometryError('');
+  }
+
+  _generateTangentForVertex(visited, v1, v2, v3) {
+    _.noop(v1, v2, v3);
+    // TODO
   }
 
   /**

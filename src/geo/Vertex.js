@@ -57,11 +57,11 @@ export class Vertex {
    * The 2D texture coordinates.
    * @type {vec2}
    */
-  get texST() {
-    return this._texST;
+  get uv() {
+    return this._uv;
   }
-  set texST(v) {
-    this._texST = v || [0, 0];
+  set uv(v) {
+    this._uv = v || [0, 0];
   }
 
   /**
@@ -88,7 +88,7 @@ export class Vertex {
    *        The vertex's surface normal vector.
    * @param {vec3[]} [opts.t]
    *        The vector's surface tangent vector, orthogonal to n.
-   * @param {vec2} [opts.texST]
+   * @param {vec2} [opts.uv]
    *        The vertex's 2D texture coordinates.
    * @param {vec4} opts.xyz
    *        The vertex's position.
@@ -97,7 +97,7 @@ export class Vertex {
     this.xyz = opts.xyz;
     this.n = opts.n;
     this.t = opts.t;
-    this.texST = opts.texST;
+    this.uv = opts.uv;
     this.color = opts.color;
   }
 
@@ -110,7 +110,7 @@ export class Vertex {
       xyz: _.clone(this.xyz),
       n: _.clone(this.n),
       t: _.clone(this.t),
-      texST: _.clone(this.texST),
+      uv: _.clone(this.uv),
       color: this.color.clone()
     });
   }
@@ -127,7 +127,7 @@ export class Vertex {
       color: this.color,
       n: vec4.transformMat4([], [...this.n, 0], m).slice(0, 3),
       t: vec4.transformMat4([], [...this.t, 0], m).slice(0, 3),
-      texST: this.texST,
+      uv: this.uv,
       xyz: vec4.transformMat4([], this.xyz, m)
     });
   }

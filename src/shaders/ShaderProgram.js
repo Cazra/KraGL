@@ -15,7 +15,7 @@ import { Uniform } from './Uniform';
  *           {
  *              position: 'xyz',
  *              normal: 'n',
- *              texCoords: 'texST'
+ *              texCoords: 'uv'
  *           }
  * @property {object} shaders
  * @property {ShaderOpts} shaders.frag

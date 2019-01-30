@@ -16,7 +16,7 @@ describe('KraGL.shaders.ShaderProgram', () => {
     attributeGetters: {
       vertexNormal: 'n',
       vertexPos: 'xyz',
-      vertexTexCoords: 'texST'
+      vertexTexCoords: 'uv'
     },
     uniformGetters: {
       mvpTrans: 'mvpTrans',
