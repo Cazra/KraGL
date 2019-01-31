@@ -8,6 +8,7 @@
 export * from './Line';
 export * from './LinearShape';
 export * from './MathError';
+export * from './Matrices';
 export * from './Plane';
 export * from './Quaternions';
 export * from './Ray';

@@ -1,6 +1,6 @@
 'use strict';
 
-import { GeometryError } from './GeometryError'; 
+import { GeometryError } from './GeometryError';
 import { VBO } from './VBO';
 import { Vertex } from './Vertex';
 
@@ -154,10 +154,10 @@ export class Mesh {
   /**
    * Generates the tangent and bitangent vectors for each each vertex in the
    * mesh, based on relative texture coordinates.
+   * Algorithm stolen from
+   * https://learnopengl.com/Advanced-Lighting/Normal-Mapping.
    */
   _generateTangents() {
-    let visited = new Set();
-
     if(this.drawMode === GL_TRIANGLES) {
       let numTriangles = Math.floor(this.indices.length/3);
 
@@ -170,17 +170,34 @@ export class Mesh {
         let v2 = this.vertices[i2];
         let v3 = this.vertices[i3];
 
-        this._generateTangentForVertex(visited, v1, v2, v3);
-        this._generateTangentForVertex(visited, v2, v3, v1);
-        this._generateTangentForVertex(visited, v3, v1, v2);
+        let edge1 = vec3.sub([], v2.xyz, v1.xyz);
+        let edge2 = vec3.sub([], v3.xyz, v1.xyz);
+
+        let deltaUV1 = vec2.sub([], v2.uv, v1.uv);
+        let du1 = deltaUV1[0];
+        let dv1 = deltaUV1[1];
+        let deltaUV2 = vec2.sub([], v3.uv, v1.uv);
+        let du2 = deltaUV2[0];
+        let dv2 = deltaUV2[1];
+
+        // Keep in mind that in the GL matrices used here are in
+        // row-major order. That is - the coordinates XY correspond to
+        // row and column, respectively.
+        let matUV = [
+          du1, du2,
+          dv1, dv2
+        ];
+        let matEdges = [
+          edge1[0], edge2[0],
+          edge1[1], edge2[1],
+          edge1[2], edge2[2]
+        ];
+
+        let matUVInv = mat2.invert([], matUV);
+         _.noop(matEdges, matUVInv); // TODO
       });
     }
     throw new GeometryError('');
-  }
-
-  _generateTangentForVertex(visited, v1, v2, v3) {
-    _.noop(v1, v2, v3);
-    // TODO
   }
 
   /**
