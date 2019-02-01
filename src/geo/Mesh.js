@@ -1,5 +1,6 @@
 'use strict';
 
+import { Matrices } from '../math';
 import { GeometryError } from './GeometryError';
 import { VBO } from './VBO';
 import { Vertex } from './Vertex';
@@ -106,6 +107,9 @@ export class Mesh {
    *        The drawing mode used for the mesh.
    * @param {GLenum} [opts.frontFace=GL_CCW]
    *        The winding direction used to determine the front of each triangle.
+   * @param {boolean} [opts.generateTangents=false]
+   *        Whether to generate tangent vectors for each vertex for normal
+   *        mapping.
    * @param {uint[]} opts.indices
    *        The list of indices specifying the order to draw the vertices as
    *        more complex primitives defined by drawMode.
@@ -130,6 +134,10 @@ export class Mesh {
 
     // A map of ShaderProgram names to Vertex Buffer Objects (VBOs).
     this._vbos = {};
+
+    // Generate the tangent vectors if enabled.
+    if(opts.generateTangents)
+      this._generateTangents();
   }
 
   /**
@@ -152,7 +160,7 @@ export class Mesh {
   }
 
   /**
-   * Generates the tangent and bitangent vectors for each each vertex in the
+   * Generates the tangent vector for each each vertex in the
    * mesh, based on relative texture coordinates.
    * Algorithm stolen from
    * https://learnopengl.com/Advanced-Lighting/Normal-Mapping.
@@ -174,30 +182,36 @@ export class Mesh {
         let edge2 = vec3.sub([], v3.xyz, v1.xyz);
 
         let deltaUV1 = vec2.sub([], v2.uv, v1.uv);
-        let du1 = deltaUV1[0];
-        let dv1 = deltaUV1[1];
         let deltaUV2 = vec2.sub([], v3.uv, v1.uv);
-        let du2 = deltaUV2[0];
-        let dv2 = deltaUV2[1];
 
         // Keep in mind that in the GL matrices used here are in
         // row-major order. That is - the coordinates XY correspond to
         // row and column, respectively.
-        let matUV = [
-          du1, du2,
-          dv1, dv2
-        ];
+        let matUV = [ deltaUV1, deltaUV2 ];
         let matEdges = [
-          edge1[0], edge2[0],
-          edge1[1], edge2[1],
-          edge1[2], edge2[2]
+          [edge1[0], edge2[0]],
+          [edge1[1], edge2[1]],
+          [edge1[2], edge2[2]]
         ];
 
-        let matUVInv = mat2.invert([], matUV);
-         _.noop(matEdges, matUVInv); // TODO
+        let matUVInv = Matrices.inverse(matUV);
+        let [tangent, bitangent] = Matrices.transpose(
+          Matrices.mul(matUVInv, matEdges)
+        );
+
+        v1.t = tangent;
+        v2.t = tangent;
+        v3.t = tangent;
+
+        // Technically, we can just compute the bitangent from the cross
+        // product of the normal and tangent vectors.
+        v1.b = bitangent;
+        v2.b = bitangent;
+        v3.b = bitangent;
       });
     }
-    throw new GeometryError('');
+    else
+      throw new GeometryError('');
   }
 
   /**
