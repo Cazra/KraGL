@@ -6,3 +6,4 @@
  */
 export * from './Color';
 export * from './Material';
+export * from './Texture';

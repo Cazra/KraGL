@@ -96,6 +96,15 @@ export function fract(x) {
 }
 
 /**
+ * Checks if some integer is a power of 2.
+ * @param {int} x
+ * @return {boolean}
+ */
+export function isPowerOf2(x) {
+  return x > 0 && (x & (x - 1)) === 0;
+}
+
+/**
  * Linearly maps a number from some domain to some range.
  * @param {number} x
  * @param {vec2} domain

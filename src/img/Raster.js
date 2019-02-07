@@ -133,6 +133,9 @@ export class Raster {
    */
   static createFromWebGLTexture(gl, tex, width, height, opts) {
     opts = opts || {};
+    if(!width || !height)
+      throw new RasterError('Must provide non-zero width and height.');
+
     let data = new Uint8Array(width * height * 4);
 
     // Get the current Framebuffer so we can restore it later.

@@ -97,6 +97,35 @@ describe('KraGL.math', function() {
     });
   });
 
+  describe('isPowerOf2', () => {
+    it('true', () => {
+      let isPowerOf2 = KraGL.math.isPowerOf2;
+      assert.isTrue(isPowerOf2(1));
+      assert.isTrue(isPowerOf2(2));
+      assert.isTrue(isPowerOf2(4));
+      assert.isTrue(isPowerOf2(8));
+      assert.isTrue(isPowerOf2(16));
+      assert.isTrue(isPowerOf2(32));
+      assert.isTrue(isPowerOf2(64));
+      assert.isTrue(isPowerOf2(128));
+      assert.isTrue(isPowerOf2(256));
+      assert.isTrue(isPowerOf2(512));
+      assert.isTrue(isPowerOf2(1024));
+    });
+
+    it('false', () => {
+      let isPowerOf2 = KraGL.math.isPowerOf2;
+      assert.isFalse(isPowerOf2(0));
+      assert.isFalse(isPowerOf2(-2));
+      assert.isFalse(isPowerOf2(3));
+      assert.isFalse(isPowerOf2(10));
+      assert.isFalse(isPowerOf2(12));
+      assert.isFalse(isPowerOf2(15));
+      assert.isFalse(isPowerOf2(127));
+      assert.isFalse(isPowerOf2(257));
+    });
+  });
+
   describe('linearMap', function() {
     it('normal case', function() {
       assert.approximately(KraGL.math.linearMap(1, [0,2], [2,12]), 7, 0.0001);
