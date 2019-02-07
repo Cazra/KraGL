@@ -25,6 +25,14 @@ const ENDED = 5;
 export class Application {
 
   /**
+   * The aspect ratio of the application's canvas.
+   * @type {number}
+   */
+  get aspectRatio() {
+    return this.canvas.clientWidth/this.canvas.clientHeight;
+  }
+
+  /**
    * The KraGL application's canvas element.
    * @type {CanvasElement}
    */
@@ -297,6 +305,23 @@ export class Application {
   }
 
   /**
+   * Resizes the application's canvas pixel size to its display size.
+   * This will also resize the GL viewport.
+   */
+  _resizeToDisplay() {
+    let canvas = this.canvas;
+
+    let displayWidth = canvas.clientWidth;
+    let displayHeight = canvas.clientHeight;
+
+    if(canvas.width !== displayWidth || canvas.height !== displayHeight) {
+      canvas.width = displayWidth;
+      canvas.height = displayHeight;
+    }
+    this.gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+
+  /**
    * Restarts the application after the current frame.
    * @return {Promise}
    */
@@ -354,6 +379,7 @@ export class Application {
     this._state = RUNNING;
     this._fpsCounter.tick();
 
+    this._resizeToDisplay();
     this.update();
     this.render();
   }
