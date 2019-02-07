@@ -3,6 +3,7 @@
 import { GLConstants } from './GLConstants';
 import { KraGLError } from './KraGLError';
 import * as app from './app';
+import * as cameras from './cameras';
 import * as geo from './geo';
 import * as img from './img';
 import * as io from './io';
@@ -48,6 +49,7 @@ window.KraGL = (() => {
     GLConstants,
     KraGLError,
     app,
+    cameras,
     geo,
     getVersion,
     img,
