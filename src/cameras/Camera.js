@@ -9,7 +9,8 @@ import { AbstractError } from '../AbstractError';
 export class Camera {
 
   /**
-   * The projection transform for the camera.
+   * The projection transform for the camera. This transforms the scene from
+   * view space to clip space.
    * @type {mat4}
    */
   get projection() {
@@ -17,7 +18,8 @@ export class Camera {
   }
 
   /**
-   * The view transform for the camera.
+   * The view transform for the camera. This transforms the scene from
+   * world space to view space.
    * @type {mat4}
    */
   get view() {
