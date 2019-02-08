@@ -147,6 +147,21 @@ export class Matrices {
   }
 
   /**
+   * Performs a chain of GL mat4 multiplications.
+   * @param {mat4[]}
+   */
+  static glChainMul4(matrices) {
+    let curIndex = matrices.length - 1;
+    let matRight = matrices[curIndex];
+    while(curIndex > 0) {
+      curIndex--;
+      let matLeft = matrices[curIndex];
+      matRight = mat4.mul([], matLeft, matRight);
+    }
+    return matRight;
+  }
+
+  /**
    * Produces a square identity matrix.
    * @param {uint} size
    * @return {SquareMatrix}

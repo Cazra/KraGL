@@ -166,6 +166,9 @@ export class Application {
       this._container.getBoundingClientRect().height;
     this._container.appendChild(this._canvas);
 
+    if(this._canvas.width === 0 || this._canvas.height === 0)
+      throw new KraGLError('Canvas dimensions must be greater than 0.');
+
     // Create the canvas's WebGL context.
     let glVersion = opts.glVersion || '1.0';
     let contextType = 'webgl';
@@ -318,6 +321,9 @@ export class Application {
       canvas.width = displayWidth;
       canvas.height = displayHeight;
     }
+    if(canvas.width === 0 || canvas.height === 0)
+      throw new KraGLError('Canvas dimensions must be greater than 0.');
+
     this.gl.viewport(0, 0, canvas.width, canvas.height);
   }
 

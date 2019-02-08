@@ -24,7 +24,5 @@ export class Camera {
     throw new AbstractError();
   }
 
-  constructor(opts) {
-    _.noop(opts);
-  }
+  constructor() {}
 }
