@@ -162,4 +162,27 @@ export class Camera2D extends Camera {
     this.zoom = 1;
     this.invertY = opts.invertY || true;
   }
+
+  /**
+   * Moves the camera's anchor to a new position and repositions the
+   * camera's eye such that the camera doesn't appear to have moved.
+   * @param {vec2} xy
+   *        The new position of the camera's anchor.
+   */
+  focusAt(xy) {
+    let dXYViewport = vec2.sub([], xy, this.anchor);
+
+    // Figure out how much the anchor is being moved in world space.
+    let matZoom = mat4.fromScaling([], [this.zoom, this.zoom, 1]);
+    let matRotate = mat4.fromRotateZ([], this.rotation);
+    let mat = mat4.mul([], matZoom, matRotate);
+    let matInv = mat4.invert([], mat);
+    let dXYWorld = vec4.transformMat4([], [...dXYViewport, 0, 0], matInv);
+
+    // Move the anchor.
+    this.anchor = _.clone(xy);
+
+    // Move the eye by the same amount, but in terms of world coordinates.
+    this.eye = vec2.add([], this.eye, dXYWorld.slice(2));
+  }
 }
