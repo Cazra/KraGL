@@ -1,4 +1,6 @@
-# KraGL
+# KraGL (Deprecated)
+
+Note: This library is pretty much abandoned now. I'll be starting a new WebGL library from a clean slate sometime soon.
 
 KraGL is an ES-Next WebGL game engine library. It is designed to make implementing
 2D and 3D browser-based games easy and fun, with a simple, well-documented interface
